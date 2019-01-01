@@ -1,12 +1,12 @@
 package com.kristofszilagyi.intellj.kotlin.inspections
 
 
-import com.intellij.codeInsight.daemon.impl.HighlightInfo
-import com.intellij.codeInsight.intention.IntentionAction
-import com.intellij.codeInspection.ComparingReferencesInspection
 import com.intellij.testFramework.UsefulTestCase
 import com.intellij.testFramework.builders.JavaModuleFixtureBuilder
-import com.intellij.testFramework.fixtures.*
+import com.intellij.testFramework.fixtures.CodeInsightTestFixture
+import com.intellij.testFramework.fixtures.IdeaTestFixtureFactory
+import com.intellij.testFramework.fixtures.JavaTestFixtureFactory
+import com.kristofszilagyi.intellij.kotlin.inspections.ComparingReferencesInspection
 import junit.framework.Assert
 
 
@@ -15,19 +15,19 @@ class TestThisPlugin : UsefulTestCase() {
     private var myFixture: CodeInsightTestFixture? = null
     // Specify path to your test data directory
     // e.g.  final String dataPath = "c:\\users\\john.doe\\idea\\community\\samples\\ComparingReferences/testData";
-    internal val dataPath = "c:\\users\\John.Doe\\idea\\community\\samples\\comparingReferences/testData"
+    private val dataPath = "c:\\users\\John.Doe\\idea\\community\\samples\\comparingReferences/testData"
 
 
     @Throws(Exception::class)
     override fun setUp() {
 
         val fixtureFactory = IdeaTestFixtureFactory.getFixtureFactory()
-        val testFixtureBuilder = fixtureFactory.createFixtureBuilder(getName())
-        myFixture = JavaTestFixtureFactory.getFixtureFactory().createCodeInsightFixture(testFixtureBuilder.getFixture())
-        myFixture!!.setTestDataPath(dataPath)
-        val builder = testFixtureBuilder.addModule(JavaModuleFixtureBuilder<*>::class.java)
+        val testFixtureBuilder = fixtureFactory.createFixtureBuilder(name)
+        myFixture = JavaTestFixtureFactory.getFixtureFactory().createCodeInsightFixture(testFixtureBuilder.fixture)
+        myFixture!!.testDataPath = dataPath
+        val builder = testFixtureBuilder.addModule(JavaModuleFixtureBuilder::class.java)
 
-        builder.addContentRoot(myFixture!!.getTempDirPath()).addSourceRoot("")
+        builder.addContentRoot(myFixture!!.tempDirPath).addSourceRoot("")
         builder.setMockJdkLevel(JavaModuleFixtureBuilder.MockJdkLevel.jdk15)
         myFixture!!.setUp()
     }
@@ -41,7 +41,7 @@ class TestThisPlugin : UsefulTestCase() {
     @Throws(Throwable::class)
     private fun doTest(testName: String, hint: String) {
         myFixture!!.configureByFile("$testName.java")
-        myFixture!!.enableInspections(ComparingReferencesInspection::class.java!!)
+        myFixture!!.enableInspections(ComparingReferencesInspection::class.java)
         val highlightInfos = myFixture!!.doHighlighting()
         Assert.assertTrue(!highlightInfos.isEmpty())
 

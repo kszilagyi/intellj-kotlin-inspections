@@ -30,4 +30,9 @@ patchPluginXml {
       <em>most HTML tags may be used</em>"""
 }
 
+sourceSets {
+    main.kotlin.srcDirs += 'src/main/kotlin'
+    test.kotlin.srcDirs += 'src/test/kotlin'
+}
+
 //todo add detekt and fail on warning
