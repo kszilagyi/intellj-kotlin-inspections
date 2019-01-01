@@ -35,4 +35,11 @@ sourceSets {
     test.kotlin.srcDirs += 'src/test/kotlin'
 }
 
-//todo add detekt and fail on warning
+compileKotlin {
+    kotlinOptions {
+        allWarningsAsErrors = true
+        freeCompilerArgs = ['-progressive']
+    }
+}
+
+//todo add detekt 

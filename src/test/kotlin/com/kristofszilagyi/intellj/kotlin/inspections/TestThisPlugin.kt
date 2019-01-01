@@ -17,8 +17,6 @@ class TestThisPlugin : UsefulTestCase() {
     // e.g.  final String dataPath = "c:\\users\\john.doe\\idea\\community\\samples\\ComparingReferences/testData";
     private val dataPath = "c:\\users\\John.Doe\\idea\\community\\samples\\comparingReferences/testData"
 
-
-    @Throws(Exception::class)
     override fun setUp() {
 
         val fixtureFactory = IdeaTestFixtureFactory.getFixtureFactory()
