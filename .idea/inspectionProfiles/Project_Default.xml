@@ -46,7 +46,6 @@
     <inspection_tool class="IfThenToElvis" enabled="true" level="ERROR" enabled_by_default="true" />
     <inspection_tool class="IfThenToSafeAccess" enabled="true" level="ERROR" enabled_by_default="true" />
     <inspection_tool class="ImplicitNullableNothingType" enabled="true" level="ERROR" enabled_by_default="true" />
-    <inspection_tool class="ImplicitThis" enabled="true" level="ERROR" enabled_by_default="true" />
     <inspection_tool class="IntroduceWhenSubject" enabled="true" level="ERROR" enabled_by_default="true" />
     <inspection_tool class="JavaCollectionsStaticMethod" enabled="true" level="ERROR" enabled_by_default="true" />
     <inspection_tool class="JavaCollectionsStaticMethodOnImmutableList" enabled="true" level="ERROR" enabled_by_default="true" />
@@ -79,7 +78,7 @@
     <inspection_tool class="PackageDirectoryMismatch" enabled="true" level="ERROR" enabled_by_default="true" />
     <inspection_tool class="PackageName" enabled="true" level="ERROR" enabled_by_default="true" />
     <inspection_tool class="PlatformExtensionReceiverOfInline" enabled="true" level="ERROR" enabled_by_default="true" />
-    <inspection_tool class="PrivatePropertyName" enabled="true" level="ERROR" enabled_by_default="true" />
+    <inspection_tool class="PrivatePropertyName" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="PropertyName" enabled="true" level="ERROR" enabled_by_default="true" />
     <inspection_tool class="ProtectedInFinal" enabled="true" level="ERROR" enabled_by_default="true" />
     <inspection_tool class="PublicApiImplicitType" enabled="false" level="ERROR" enabled_by_default="false" />
@@ -152,7 +151,7 @@
     <inspection_tool class="UnusedLambdaExpressionBody" enabled="true" level="ERROR" enabled_by_default="true" />
     <inspection_tool class="UnusedReceiverParameter" enabled="true" level="ERROR" enabled_by_default="true" />
     <inspection_tool class="UnusedSymbol" enabled="true" level="ERROR" enabled_by_default="true" />
-    <inspection_tool class="UseExpressionBody" enabled="true" level="ERROR" enabled_by_default="true" />
+    <inspection_tool class="UseExpressionBody" enabled="true" level="WEAK WARNING" enabled_by_default="true" />
     <inspection_tool class="UsePropertyAccessSyntax" enabled="true" level="ERROR" enabled_by_default="true" />
     <inspection_tool class="UseWithIndex" enabled="true" level="ERROR" enabled_by_default="true" />
     <inspection_tool class="UselessCallOnCollection" enabled="true" level="ERROR" enabled_by_default="true" />

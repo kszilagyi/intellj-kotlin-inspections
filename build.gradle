@@ -22,9 +22,12 @@ compileTestKotlin {
 }
 intellij {
     version '2018.3.2'
+    plugins 'Kotlin'
 }
 patchPluginXml {
     changeNotes """
       Add change notes here.<br>
       <em>most HTML tags may be used</em>"""
 }
+
+//todo add detekt and fail on warning
