@@ -67,4 +67,4 @@ task detektTask(type: io.gitlab.arturbosch.detekt.Detekt) {
     config = detektConfig
 }
 
-build.dependsOn detektTask
+assemble.dependsOn detektTask
