@@ -1,26 +1,15 @@
 package com.kristofszilagyi.intellij.kotlin.inspections
 
 import com.intellij.codeInsight.daemon.GroupNames
-import com.intellij.codeInspection.*
-import com.intellij.openapi.diagnostic.Logger
-import com.intellij.openapi.project.Project
+import com.intellij.codeInspection.InspectionsBundle
+import com.intellij.codeInspection.ProblemsHolder
 import com.intellij.psi.*
-import com.intellij.ui.DocumentAdapter
-import com.intellij.util.IncorrectOperationException
-import org.jetbrains.annotations.*
+import org.jetbrains.annotations.NonNls
 import org.jetbrains.kotlin.idea.inspections.AbstractKotlinInspection
+import java.util.*
 
-import javax.swing.*
-import javax.swing.event.DocumentEvent
-import java.awt.*
-import java.util.StringTokenizer
 
-/**
- * @author max
- */
 class ComparingReferencesInspection : AbstractKotlinInspection() {
-
-    private val myQuickFix = MyQuickFix()
 
     @NonNls
     private var checkedClasses = "java.lang.String;java.util.Date"
@@ -68,7 +57,7 @@ class ComparingReferencesInspection : AbstractKotlinInspection() {
                     if (isCheckedType(lType) || isCheckedType(rType)) {
                         holder.registerProblem(
                             expression,
-                            DESCRIPTION_TEMPLATE, myQuickFix
+                            DESCRIPTION_TEMPLATE
                         )
                     }
                 }
@@ -76,63 +65,9 @@ class ComparingReferencesInspection : AbstractKotlinInspection() {
         }
     }
 
-    private class MyQuickFix : LocalQuickFix {
-        override fun getName(): String {
-            // The test (see the TestThisPlugin class) uses this string to identify the quick fix action.
-            return InspectionsBundle.message("inspection.comparing.references.use.quickfix")
-        }
-
-
-        override fun applyFix(project: Project, descriptor: ProblemDescriptor) {
-            try {
-                val binaryExpression = descriptor.psiElement as PsiBinaryExpression
-                val opSign = binaryExpression.operationTokenType
-                val lExpr = binaryExpression.lOperand
-                val rExpr = binaryExpression.rOperand ?: return
-
-                val factory = JavaPsiFacade.getInstance(project).elementFactory
-                val equalsCall = factory.createExpressionFromText("a.equals(b)", null) as PsiMethodCallExpression
-
-                equalsCall.methodExpression.qualifierExpression!!.replace(lExpr)
-                equalsCall.argumentList.expressions[0].replace(rExpr)
-
-                val result = binaryExpression.replace(equalsCall) as PsiExpression
-
-                if (opSign === JavaTokenType.NE) {
-                    val negation = factory.createExpressionFromText("!a", null) as PsiPrefixExpression
-                    negation.operand!!.replace(result)
-                    result.replace(negation)
-                }
-            } catch (e: IncorrectOperationException) {
-                LOG.error(e)
-            }
-
-        }
-
-        override fun getFamilyName(): String {
-            return name
-        }
-    }
-
-    override fun createOptionsPanel(): JComponent? {
-        val panel = JPanel(FlowLayout(FlowLayout.LEFT))
-        val checkedClasses = JTextField(checkedClasses)
-        checkedClasses.document.addDocumentListener(object : DocumentAdapter() {
-            public override fun textChanged(event: DocumentEvent) {
-                this@ComparingReferencesInspection.checkedClasses = checkedClasses.text
-            }
-        })
-
-        panel.add(checkedClasses)
-        return panel
-    }
-
-    override fun isEnabledByDefault(): Boolean {
-        return true
-    }
+    override fun isEnabledByDefault(): Boolean = true
 
     companion object {
-        private val LOG = Logger.getInstance(this::class.java)
         @NonNls
         private val DESCRIPTION_TEMPLATE =
             InspectionsBundle.message("inspection.comparing.references.problem.descriptor")

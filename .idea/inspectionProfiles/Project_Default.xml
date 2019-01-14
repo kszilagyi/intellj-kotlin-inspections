@@ -42,7 +42,10 @@
     <inspection_tool class="ForEachParameterNotUsed" enabled="true" level="ERROR" enabled_by_default="true" />
     <inspection_tool class="FromClosedRangeMigration" enabled="false" level="ERROR" enabled_by_default="false" />
     <inspection_tool class="FunctionName" enabled="true" level="ERROR" enabled_by_default="true" />
-    <inspection_tool class="HasPlatformType" enabled="true" level="ERROR" enabled_by_default="true" />
+    <inspection_tool class="HasPlatformType" enabled="true" level="ERROR" enabled_by_default="true">
+      <option name="publicAPIOnly" value="false" />
+      <option name="reportPlatformArguments" value="true" />
+    </inspection_tool>
     <inspection_tool class="IfThenToElvis" enabled="true" level="ERROR" enabled_by_default="true" />
     <inspection_tool class="IfThenToSafeAccess" enabled="true" level="ERROR" enabled_by_default="true" />
     <inspection_tool class="ImplicitNullableNothingType" enabled="true" level="ERROR" enabled_by_default="true" />
@@ -57,14 +60,13 @@
     <inspection_tool class="KotlinMavenPluginPhase" enabled="true" level="ERROR" enabled_by_default="true" />
     <inspection_tool class="KotlinRedundantOverride" enabled="true" level="ERROR" enabled_by_default="true" />
     <inspection_tool class="KotlinTestJUnit" enabled="true" level="ERROR" enabled_by_default="true" />
-    <inspection_tool class="KotlinUnusedImport" enabled="true" level="ERROR" enabled_by_default="true" />
     <inspection_tool class="LeakingThis" enabled="true" level="ERROR" enabled_by_default="true" />
     <inspection_tool class="LiftReturnOrAssignment" enabled="true" level="ERROR" enabled_by_default="true" />
     <inspection_tool class="LocalVariableName" enabled="true" level="ERROR" enabled_by_default="true" />
     <inspection_tool class="LoopToCallChain" enabled="true" level="ERROR" enabled_by_default="true" />
     <inspection_tool class="MainFunctionReturnUnit" enabled="true" level="ERROR" enabled_by_default="true" />
     <inspection_tool class="MayBeConstant" enabled="true" level="ERROR" enabled_by_default="true" />
-    <inspection_tool class="MemberVisibilityCanBePrivate" enabled="true" level="ERROR" enabled_by_default="true" />
+    <inspection_tool class="MemberVisibilityCanBePrivate" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="MigrateDiagnosticSuppression" enabled="true" level="ERROR" enabled_by_default="true" />
     <inspection_tool class="MoveLambdaOutsideParentheses" enabled="true" level="ERROR" enabled_by_default="true" />
     <inspection_tool class="MoveSuspiciousCallableReferenceIntoParentheses" enabled="true" level="ERROR" enabled_by_default="true" />
