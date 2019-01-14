@@ -61,10 +61,4 @@ detekt {
     config = detektConfig
 }
 
-task detektTask(type: io.gitlab.arturbosch.detekt.Detekt) {
-    input = detektInputs
-    filters = detektFilters
-    config = detektConfig
-}
-
-assemble.dependsOn detektTask
+assemble.dependsOn "detekt"
