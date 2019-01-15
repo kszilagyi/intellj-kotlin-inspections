@@ -7,7 +7,7 @@ import org.jetbrains.kotlin.idea.test.PluginTestCaseBase
 
 class TestImplicitPlatformTypeConversionInspection : KotlinLightCodeInsightFixtureTestCase() {
 
-    override fun getTestDataPath(): String = PluginTestCaseBase.getTestDataPathBase()
+    override fun getTestDataPath(): String = PluginTestCaseBase.getTestDataPathBase() + "/ImplicitPlatformTypeConversion"
 
     override fun getProjectDescriptor(): LightProjectDescriptor = KotlinLightProjectDescriptor.INSTANCE
 
@@ -17,10 +17,9 @@ class TestImplicitPlatformTypeConversionInspection : KotlinLightCodeInsightFixtu
     }
 
 
-    fun testOne() {
-        myFixture.configureByFile("testData/Test1.kt")
-        myFixture.testHighlighting(true, false, false, "testData/Test1.kt")
-
+    fun testConvertPlatformTypeOnReturn() {
+        myFixture.configureByFiles("ConvertPlatformTypeOnReturn.kt", "MyClass.java", "Value.java")
+        myFixture.testHighlighting( "ConvertPlatformTypeOnReturn.kt")
     }
 
 }

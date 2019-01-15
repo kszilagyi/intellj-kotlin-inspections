@@ -65,7 +65,6 @@
     <inspection_tool class="LocalVariableName" enabled="true" level="ERROR" enabled_by_default="true" />
     <inspection_tool class="LoopToCallChain" enabled="true" level="ERROR" enabled_by_default="true" />
     <inspection_tool class="MainFunctionReturnUnit" enabled="true" level="ERROR" enabled_by_default="true" />
-    <inspection_tool class="MayBeConstant" enabled="true" level="ERROR" enabled_by_default="true" />
     <inspection_tool class="MemberVisibilityCanBePrivate" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="MigrateDiagnosticSuppression" enabled="true" level="ERROR" enabled_by_default="true" />
     <inspection_tool class="MoveLambdaOutsideParentheses" enabled="true" level="ERROR" enabled_by_default="true" />
