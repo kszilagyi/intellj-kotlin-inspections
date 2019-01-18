@@ -7,12 +7,10 @@ import com.intellij.psi.util.parentOfType
 import org.jetbrains.kotlin.idea.caches.resolve.analyze
 import org.jetbrains.kotlin.idea.debugger.sequence.psi.resolveType
 import org.jetbrains.kotlin.idea.inspections.AbstractKotlinInspection
-import org.jetbrains.kotlin.idea.refactoring.renderTrimmed
 import org.jetbrains.kotlin.psi.*
 import org.jetbrains.kotlin.resolve.BindingContext
 import org.jetbrains.kotlin.resolve.lazy.BodyResolveMode
 import org.jetbrains.kotlin.types.isFlexible
-import kotlin.math.exp
 
 
 class ReturnPlatformTypeInspection : AbstractKotlinInspection() {
