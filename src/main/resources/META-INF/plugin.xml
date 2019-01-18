@@ -5,9 +5,19 @@
     <vendor email="dummy" url="dummy">dummy</vendor>
 
     <depends>com.intellij.modules.lang</depends>
+    <depends>org.jetbrains.kotlin</depends>
+
 
     <extensions defaultExtensionNs="com.intellij">
-        <inspectionToolProvider implementation="com.kristofszilagyi.intellij.kotlin.inspections.ComparingReferencesProvider"/>
-    </extensions>
+        <compileServer.plugin classpath="jps/kotlin-jps-plugin.jar;kotlin-stdlib.jar;kotlin-reflect.jar;kotlin-plugin.jar"/>
 
+        <localInspection implementationClass="com.kristofszilagyi.intellij.kotlin.inspections.ReturnPlatformTypeInspection"
+                         displayName="Return platform type"
+                         groupPath="Kotlin"
+                         groupName="Probably bugs"
+                         enabledByDefault="true"
+                         level="ERROR"
+                         language="kotlin"
+        />
+    </extensions>
 </idea-plugin>

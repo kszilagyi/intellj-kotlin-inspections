@@ -30,7 +30,9 @@ compileTestKotlin {
 }
 intellij {
     version '2018.3.2'
-    plugins 'Kotlin'
+    pluginName "Kotlin inspections"
+
+    plugins 'IntelliLang', 'Kotlin'
 }
 patchPluginXml {
     changeNotes """

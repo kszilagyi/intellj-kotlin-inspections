@@ -2,6 +2,6 @@
 
 class ConvertPlatformTypeOnReturn {
     fun getValue(): Value {
-        return MyClass.<error descr="Implicit conversion of platform type to non-nullable">value</error>();
+        <error descr="You are implicitly converting a platform type into a non-nullable type. This code might throw.">return MyClass.value()</error>;
     }
 }

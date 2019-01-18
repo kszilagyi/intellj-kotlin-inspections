@@ -1,11 +1,12 @@
 package com.kristofszilagyi.intellj.kotlin.inspections
 
 import com.intellij.testFramework.LightProjectDescriptor
+import com.kristofszilagyi.intellij.kotlin.inspections.ReturnPlatformTypeInspection
 import org.jetbrains.kotlin.idea.test.KotlinLightCodeInsightFixtureTestCase
 import org.jetbrains.kotlin.idea.test.KotlinLightProjectDescriptor
 import org.jetbrains.kotlin.idea.test.PluginTestCaseBase
 
-class TestImplicitPlatformTypeConversionInspection : KotlinLightCodeInsightFixtureTestCase() {
+class TestStrictPlatformTypeNullSafetyInpection : KotlinLightCodeInsightFixtureTestCase() {
 
     override fun getTestDataPath(): String = PluginTestCaseBase.getTestDataPathBase() + "/ImplicitPlatformTypeConversion"
 
@@ -13,7 +14,7 @@ class TestImplicitPlatformTypeConversionInspection : KotlinLightCodeInsightFixtu
 
     override fun setUp() {
         super.setUp()
-//        myFixture.enableInspections(BlockingMethodInNonBlockingContextInspection::class.java)
+        myFixture.enableInspections(ReturnPlatformTypeInspection())
     }
 
 
@@ -22,4 +23,5 @@ class TestImplicitPlatformTypeConversionInspection : KotlinLightCodeInsightFixtu
         myFixture.testHighlighting( "ConvertPlatformTypeOnReturn.kt")
     }
 
+    //other cases: overriding things which takes platform type, assigning to variable
 }
