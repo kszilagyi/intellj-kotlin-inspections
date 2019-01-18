@@ -33,6 +33,22 @@ class ReturnPlatformTypeInspection : AbstractKotlinInspection() {
                 }
             }
 
+            override fun visitIfExpression(expression: KtIfExpression) {
+                super.visitIfExpression(expression)
+                val type = expression.resolveType()
+                if (!type.isFlexible() && !type.isMarkedNullable) {
+                    val thenBlock = expression.then
+                    val elseBlock = expression.`else`
+                    if (thenBlock != null && thenBlock.resolveType().isFlexible()) {
+                        registerProblem(holder, thenBlock)
+                    }
+
+                    if (elseBlock != null && elseBlock.resolveType().isFlexible()) {
+                        registerProblem(holder, elseBlock)
+                    }
+                }
+            }
+
             override fun visitReturnExpression(expression: KtReturnExpression) {
                 super.visitReturnExpression(expression)
                 val typeInReturn = expression.returnedExpression?.resolveType()

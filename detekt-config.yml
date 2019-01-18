@@ -69,14 +69,14 @@ comments:
 complexity:
   active: true
   ComplexCondition:
-    active: true
+    active: false
     threshold: 4
   ComplexInterface:
     active: false
     threshold: 10
     includeStaticDeclarations: false
   ComplexMethod:
-    active: true
+    active: false
     threshold: 10
     ignoreSingleWhenExpression: false
     ignoreSimpleWhenEntries: false
