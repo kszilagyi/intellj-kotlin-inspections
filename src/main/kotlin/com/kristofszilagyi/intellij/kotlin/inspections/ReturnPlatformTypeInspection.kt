@@ -35,8 +35,9 @@ class ReturnPlatformTypeInspection : AbstractKotlinInspection() {
 
             override fun visitIfExpression(expression: KtIfExpression) {
                 super.visitIfExpression(expression)
-                val type = expression.resolveType()
                 expression.analyze(BodyResolveMode.FULL) // without this the type of then and else is intermittently Unit
+                val type = expression.resolveType()
+
                 if (!type.isFlexible() && !type.isMarkedNullable) {
                     val thenBlock = expression.then
                     val elseBlock = expression.`else`
