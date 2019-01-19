@@ -46,8 +46,8 @@ class ConvertPlatformTypeOnReturn {
 
     fun getValueExpressionWhen(): Value = when (1.hashCode()) {
         1 -> Value()
-        2 -> <error descr="You are implicitly converting a platform type into a non-nullable type. This code might throw."> JavaClass.value() </error>
-        else -> <error descr="You are implicitly converting a platform type into a non-nullable type. This code might throw."> JavaClass.value() </error>
+        2 ->  <error descr="You are implicitly converting a platform type into a non-nullable type. This code might throw.">JavaClass.value()</error>
+        else ->  <error descr="You are implicitly converting a platform type into a non-nullable type. This code might throw.">JavaClass.value()</error>
     }
 
     fun getValueExpressionWhenNullable(): Value? = when (1.hashCode()) {
@@ -71,6 +71,7 @@ class ConvertPlatformTypeOnReturn {
     fun getValueExpressionCatchNullable(): Value? = try { JavaClass.value() }
         catch(e: Throwable) { JavaClass.value() }
 
+    //    fun binary(): Value = JavaClass.value().doSomething() + "a"
 }
 
 //add getters and setters
