@@ -7,6 +7,7 @@ import com.intellij.psi.util.parentOfType
 import org.jetbrains.kotlin.idea.caches.resolve.analyze
 import org.jetbrains.kotlin.idea.debugger.sequence.psi.resolveType
 import org.jetbrains.kotlin.idea.inspections.AbstractKotlinInspection
+import org.jetbrains.kotlin.lexer.KtTokens.ELVIS
 
 import org.jetbrains.kotlin.psi.*
 import org.jetbrains.kotlin.resolve.BindingContext
@@ -71,7 +72,8 @@ class ReturnPlatformTypeInspection : AbstractKotlinInspection() {
 
             override fun visitBinaryExpression(expression: KtBinaryExpression) {
                 super.visitBinaryExpression(expression)
-                // without this the type of then and else is intermittently Unit
+
+                // TODO do I need this and why?
                 expression.analyze(BodyResolveMode.FULL)
 
                 val type = expression.resolveType()
@@ -80,7 +82,8 @@ class ReturnPlatformTypeInspection : AbstractKotlinInspection() {
                     val rightBlock = expression.right
                     val calledFunction = (expression.operationReference.reference?.resolve() as? KtCallableDeclaration)
                     val operatorContext = calledFunction?.analyze(BodyResolveMode.FULL)
-                    if (leftBlock != null && leftBlock.resolveType().isFlexible()) {
+                    if (leftBlock != null && leftBlock.resolveType().isFlexible()
+                            && expression.operationReference.operationSignTokenType != ELVIS) {
                         val receiverType = operatorContext?.get(BindingContext.TYPE, calledFunction.receiverTypeReference)
                         if (receiverType == null || !receiverType.isMarkedNullable) {
                             registerProblem(holder, leftBlock)
@@ -90,7 +93,6 @@ class ReturnPlatformTypeInspection : AbstractKotlinInspection() {
                     if (rightBlock != null && rightBlock.resolveType().isFlexible()) {
                         val parameterType = operatorContext?.get(BindingContext.TYPE,
                             calledFunction.valueParameterList?.parameters?.firstOrNull()?.typeReference)
-                        println("parameterType: $parameterType")
                         if (parameterType == null || !parameterType.isMarkedNullable) {
                             registerProblem(holder, rightBlock)
                         }
