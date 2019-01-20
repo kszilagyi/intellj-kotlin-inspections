@@ -71,7 +71,21 @@ class ConvertPlatformTypeOnReturn {
     fun getValueExpressionCatchNullable(): Value? = try { JavaClass.value() }
         catch(e: Throwable) { JavaClass.value() }
 
-    //    fun binary(): Value = JavaClass.value().doSomething() + "a"
+    fun binary(): Value = <error descr="You are implicitly converting a platform type into a non-nullable type. This code might throw.">JavaClass.value()</error>  + Value()
+    fun binaryNullable(): Value? = <error descr="You are implicitly converting a platform type into a non-nullable type. This code might throw.">JavaClass.value()</error> + Value()
+
+    fun binarySwitched(): Value = Value() + <error descr="You are implicitly converting a platform type into a non-nullable type. This code might throw.">JavaClass.value()</error>
+    fun binarySwitchedNullable(): Value? = Value() + <error descr="You are implicitly converting a platform type into a non-nullable type. This code might throw.">JavaClass.value()</error>
+
+    fun binaryNullableParameterInOperator(): Value = JavaClass.value() - Value()
+    fun binaryNullableReceiverInOperator(): Value = Value() * JavaClass.value()
+    // todo string concat shouldn'be highlighted
+
+    fun binaryElvis(): Value = JavaClass.value() ?: Value()
+    fun binaryElvisNullable(): Value? = JavaClass.value() ?: Value()
+
+    fun binaryBoth(): Value = <error descr="You are implicitly converting a platform type into a non-nullable type. This code might throw.">JavaClass.value() + JavaClass.value()</error>
+    fun binaryBothNullable(): Value? = JavaClass.value() + JavaClass.value()
 }
 
 //add getters and setters

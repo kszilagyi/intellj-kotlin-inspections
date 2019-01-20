@@ -7,7 +7,7 @@ import com.intellij.psi.util.parentOfType
 import org.jetbrains.kotlin.idea.caches.resolve.analyze
 import org.jetbrains.kotlin.idea.debugger.sequence.psi.resolveType
 import org.jetbrains.kotlin.idea.inspections.AbstractKotlinInspection
-import org.jetbrains.kotlin.idea.intentions.resultingWhens
+
 import org.jetbrains.kotlin.psi.*
 import org.jetbrains.kotlin.resolve.BindingContext
 import org.jetbrains.kotlin.resolve.lazy.BodyResolveMode
@@ -52,7 +52,6 @@ class ReturnPlatformTypeInspection : AbstractKotlinInspection() {
                 }
             }
 
-            // we probably can merge when and if with resultingWhens
 
             override fun visitWhenExpression(expression: KtWhenExpression) {
                 super.visitWhenExpression(expression)
@@ -65,6 +64,35 @@ class ReturnPlatformTypeInspection : AbstractKotlinInspection() {
                         val entryExpression = it.expression
                         if (entryExpression != null && entryExpression.resolveType().isFlexible()) {
                             registerProblem(holder, entryExpression)
+                        }
+                    }
+                }
+            }
+
+            override fun visitBinaryExpression(expression: KtBinaryExpression) {
+                super.visitBinaryExpression(expression)
+                // without this the type of then and else is intermittently Unit
+                expression.analyze(BodyResolveMode.FULL)
+
+                val type = expression.resolveType()
+                if (!type.isFlexible() && !type.isMarkedNullable) {
+                    val leftBlock = expression.left
+                    val rightBlock = expression.right
+                    val calledFunction = (expression.operationReference.reference?.resolve() as? KtCallableDeclaration)
+                    val operatorContext = calledFunction?.analyze(BodyResolveMode.FULL)
+                    if (leftBlock != null && leftBlock.resolveType().isFlexible()) {
+                        val receiverType = operatorContext?.get(BindingContext.TYPE, calledFunction.receiverTypeReference)
+                        if (receiverType == null || !receiverType.isMarkedNullable) {
+                            registerProblem(holder, leftBlock)
+                        }
+                    }
+
+                    if (rightBlock != null && rightBlock.resolveType().isFlexible()) {
+                        val parameterType = operatorContext?.get(BindingContext.TYPE,
+                            calledFunction.valueParameterList?.parameters?.firstOrNull()?.typeReference)
+                        println("parameterType: $parameterType")
+                        if (parameterType == null || !parameterType.isMarkedNullable) {
+                            registerProblem(holder, rightBlock)
                         }
                     }
                 }
