@@ -74,7 +74,7 @@ class ReturnPlatformTypeInspection : AbstractKotlinInspection() {
                 super.visitBinaryExpression(expression)
 
                 // TODO do I need this and why?
-                expression.analyze(BodyResolveMode.FULL)
+                //expression.analyze(BodyResolveMode.FULL)
 
                 val type = expression.resolveType()
                 if (!type.isFlexible() && !type.isMarkedNullable) {

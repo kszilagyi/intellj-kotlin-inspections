@@ -85,9 +85,9 @@ class ConvertPlatformTypeOnReturn {
     fun binaryElvisNullable(): Value? = JavaClass.value() ?: Value()
     fun binaryElvisNullableBothPlatform(): Value = JavaClass.value() ?: <error descr="You are implicitly converting a platform type into a non-nullable type. This code might throw.">JavaClass.value()</error>
 
-    fun binaryBoth(): Value = <error descr="You are implicitly converting a platform type into a non-nullable type. This code might throw.">JavaClass.value() + JavaClass.value()</error>
-    fun binaryBothNullable(): Value? = JavaClass.value() + JavaClass.value()
+    fun binaryBoth(): Value = <error descr="You are implicitly converting a platform type into a non-nullable type. This code might throw.">JavaClass.value()</error> + <error descr="You are implicitly converting a platform type into a non-nullable type. This code might throw.">JavaClass.value()</error>
+    fun binaryBothNullable(): Value? = <error descr="You are implicitly converting a platform type into a non-nullable type. This code might throw.">JavaClass.value()</error> + <error descr="You are implicitly converting a platform type into a non-nullable type. This code might throw.">JavaClass.value()</error>
 }
 
 //add getters and setters
-//add ternary? (elvis?)
+// add String operations  (needs jdk)
