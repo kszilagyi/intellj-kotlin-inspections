@@ -37,7 +37,7 @@ class ReturnPlatformTypeInspection : AbstractKotlinInspection() {
 
             override fun visitIfExpression(expression: KtIfExpression) {
                 super.visitIfExpression(expression)
-                expression.analyze(BodyResolveMode.FULL) // without this the type of then and else is intermittently Unit
+                expression.analyze(BodyResolveMode.FULL) // without this the type of then and else is intermittently Unit (in the test)
                 val type = expression.resolveType()
 
                 if (!type.isFlexible() && !type.isMarkedNullable) {
@@ -72,9 +72,6 @@ class ReturnPlatformTypeInspection : AbstractKotlinInspection() {
 
             override fun visitBinaryExpression(expression: KtBinaryExpression) {
                 super.visitBinaryExpression(expression)
-
-                // TODO do I need this and why?
-                //expression.analyze(BodyResolveMode.FULL)
 
                 val type = expression.resolveType()
                 if (!type.isFlexible() && !type.isMarkedNullable) {
