@@ -81,6 +81,9 @@ class ConvertPlatformTypeOnReturn {
     fun binaryNullableReceiverInOperator(): Value = Value() * JavaClass.value()
     // todo string concat shouldn'be highlighted
 
+    fun stringAddition(): String = "hi " + Value().name() // it's weird that this fails as the plys has the right signature
+    fun stringAdditionReverse(): String = Value().name() + " hi"
+
     fun binaryElvis(): Value = JavaClass.value() ?: Value()
     fun binaryElvisNullable(): Value? = JavaClass.value() ?: Value()
     fun binaryElvisNullableBothPlatform(): Value = JavaClass.value() ?: <error descr="You are implicitly converting a platform type into a non-nullable type. This code might throw.">JavaClass.value()</error>

@@ -38,7 +38,7 @@ public class KotlinLightProjectDescriptor extends LightProjectDescriptor {
 
     @Override
     public Sdk getSdk() {
-        return PluginTestCaseBase.mockJdk();
+        return PluginTestCaseBase.fullJdk();
     }
 
     @Override
