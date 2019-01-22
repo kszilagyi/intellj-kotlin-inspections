@@ -1,6 +1,6 @@
 
 
-class ConvertPlatformTypeOnReturn {
+class ReturnAndExpressions {
     fun getValue(): Value {
         <error descr="You are implicitly converting a platform type into a non-nullable type. This code might throw.">return JavaClass.value()</error>
     }
@@ -90,7 +90,8 @@ class ConvertPlatformTypeOnReturn {
 
     fun binaryBoth(): Value = <error descr="You are implicitly converting a platform type into a non-nullable type. This code might throw.">JavaClass.value()</error> + <error descr="You are implicitly converting a platform type into a non-nullable type. This code might throw.">JavaClass.value()</error>
     fun binaryBothNullable(): Value? = <error descr="You are implicitly converting a platform type into a non-nullable type. This code might throw.">JavaClass.value()</error> + <error descr="You are implicitly converting a platform type into a non-nullable type. This code might throw.">JavaClass.value()</error>
+
+
 }
 
 //add getters and setters
-// add String operations  (needs jdk)

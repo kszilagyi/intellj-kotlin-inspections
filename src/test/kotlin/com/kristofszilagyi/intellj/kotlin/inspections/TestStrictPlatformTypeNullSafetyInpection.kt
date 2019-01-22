@@ -1,7 +1,7 @@
 package com.kristofszilagyi.intellj.kotlin.inspections
 
 import com.intellij.testFramework.LightProjectDescriptor
-import com.kristofszilagyi.intellij.kotlin.inspections.ReturnPlatformTypeInspection
+import com.kristofszilagyi.intellij.kotlin.inspections.MoreStrictNullSafetyInspection
 import org.jetbrains.kotlin.idea.test.KotlinLightCodeInsightFixtureTestCase
 import org.jetbrains.kotlin.idea.test.KotlinLightProjectDescriptor
 import org.jetbrains.kotlin.idea.test.PluginTestCaseBase
@@ -14,7 +14,7 @@ class TestStrictPlatformTypeNullSafetyInpection : KotlinLightCodeInsightFixtureT
 
     override fun setUp() {
         super.setUp()
-        myFixture.enableInspections(ReturnPlatformTypeInspection())
+        myFixture.enableInspections(MoreStrictNullSafetyInspection())
     }
 
 

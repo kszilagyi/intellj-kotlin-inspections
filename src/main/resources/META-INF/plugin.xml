@@ -11,7 +11,7 @@
     <extensions defaultExtensionNs="com.intellij">
         <compileServer.plugin classpath="jps/kotlin-jps-plugin.jar;kotlin-stdlib.jar;kotlin-reflect.jar;kotlin-plugin.jar"/>
 
-        <localInspection implementationClass="com.kristofszilagyi.intellij.kotlin.inspections.ReturnPlatformTypeInspection"
+        <localInspection implementationClass="com.kristofszilagyi.intellij.kotlin.inspections.MoreStrictNullSafetyInspection"
                          displayName="Return platform type"
                          groupPath="Kotlin"
                          groupName="Probably bugs"

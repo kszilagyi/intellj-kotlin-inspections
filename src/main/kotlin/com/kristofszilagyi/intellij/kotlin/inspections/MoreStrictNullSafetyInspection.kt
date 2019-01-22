@@ -17,9 +17,9 @@ import org.jetbrains.kotlin.types.isFlexible
 import org.jetbrains.kotlinx.serialization.compiler.resolve.toClassDescriptor
 
 
-class ReturnPlatformTypeInspection : AbstractKotlinInspection() {
+class MoreStrictNullSafetyInspection : AbstractKotlinInspection() {
 
-    override fun getShortName(): String = "ReturnPlatformType"
+    override fun getShortName(): String = "MoreStrictNullSafety"
 
     override fun buildVisitor(holder: ProblemsHolder, isOnTheFly: Boolean): PsiElementVisitor {
         return object : KtVisitorVoid() {
