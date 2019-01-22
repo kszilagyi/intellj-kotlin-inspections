@@ -7,12 +7,18 @@ import com.intellij.psi.util.parentOfType
 import org.jetbrains.kotlin.idea.caches.resolve.analyze
 import org.jetbrains.kotlin.idea.debugger.sequence.psi.resolveType
 import org.jetbrains.kotlin.idea.inspections.AbstractKotlinInspection
+import org.jetbrains.kotlin.idea.refactoring.renderTrimmed
 import org.jetbrains.kotlin.lexer.KtTokens.ELVIS
+import org.jetbrains.kotlin.lexer.KtTokens.PLUS
 
 import org.jetbrains.kotlin.psi.*
 import org.jetbrains.kotlin.resolve.BindingContext
+import org.jetbrains.kotlin.resolve.descriptorUtil.classId
 import org.jetbrains.kotlin.resolve.lazy.BodyResolveMode
+import org.jetbrains.kotlin.serialization.deserialization.descriptors.DeserializedClassDescriptor
 import org.jetbrains.kotlin.types.isFlexible
+import org.jetbrains.kotlinx.serialization.compiler.resolve.toClassDescriptor
+import kotlin.reflect.jvm.internal.impl.serialization.deserialization.descriptors.DeserializedMemberScope
 
 
 class ReturnPlatformTypeInspection : AbstractKotlinInspection() {
@@ -70,14 +76,27 @@ class ReturnPlatformTypeInspection : AbstractKotlinInspection() {
                 }
             }
 
+            private fun isStringConcat(expression: KtBinaryExpression): Boolean {
+                if (expression.operationReference.operationSignTokenType == PLUS) {
+                    val leftType = expression.left?.resolveType()
+                    val rightType =  expression.right?.resolveType()
+                    if (leftType?.unwrap()?.toClassDescriptor?.classId?.asString() == "kotlin/String" &&
+                        rightType?.unwrap()?.toClassDescriptor?.classId?.asString() == "kotlin/String") {
+                        return true
+                    }
+                }
+                return false
+            }
+
             override fun visitBinaryExpression(expression: KtBinaryExpression) {
                 super.visitBinaryExpression(expression)
 
                 val type = expression.resolveType()
-                if (!type.isFlexible() && !type.isMarkedNullable) {
+                if (!type.isFlexible() && !type.isMarkedNullable && !isStringConcat(expression)) {
                     val leftBlock = expression.left
                     val rightBlock = expression.right
                     val calledFunction = (expression.operationReference.reference?.resolve() as? KtCallableDeclaration)
+
                     val operatorContext = calledFunction?.analyze(BodyResolveMode.FULL)
                     if (leftBlock != null && leftBlock.resolveType().isFlexible()
                             && expression.operationReference.operationSignTokenType != ELVIS) {
