@@ -7,18 +7,14 @@ import com.intellij.psi.util.parentOfType
 import org.jetbrains.kotlin.idea.caches.resolve.analyze
 import org.jetbrains.kotlin.idea.debugger.sequence.psi.resolveType
 import org.jetbrains.kotlin.idea.inspections.AbstractKotlinInspection
-import org.jetbrains.kotlin.idea.refactoring.renderTrimmed
 import org.jetbrains.kotlin.lexer.KtTokens.ELVIS
 import org.jetbrains.kotlin.lexer.KtTokens.PLUS
-
 import org.jetbrains.kotlin.psi.*
 import org.jetbrains.kotlin.resolve.BindingContext
 import org.jetbrains.kotlin.resolve.descriptorUtil.classId
 import org.jetbrains.kotlin.resolve.lazy.BodyResolveMode
-import org.jetbrains.kotlin.serialization.deserialization.descriptors.DeserializedClassDescriptor
 import org.jetbrains.kotlin.types.isFlexible
 import org.jetbrains.kotlinx.serialization.compiler.resolve.toClassDescriptor
-import kotlin.reflect.jvm.internal.impl.serialization.deserialization.descriptors.DeserializedMemberScope
 
 
 class ReturnPlatformTypeInspection : AbstractKotlinInspection() {
