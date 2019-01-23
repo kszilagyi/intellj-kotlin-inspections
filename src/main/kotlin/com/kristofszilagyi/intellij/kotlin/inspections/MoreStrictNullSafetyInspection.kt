@@ -7,6 +7,7 @@ import com.intellij.psi.util.parentOfType
 import org.jetbrains.kotlin.idea.caches.resolve.analyze
 import org.jetbrains.kotlin.idea.debugger.sequence.psi.resolveType
 import org.jetbrains.kotlin.idea.inspections.AbstractKotlinInspection
+import org.jetbrains.kotlin.idea.refactoring.renderTrimmed
 import org.jetbrains.kotlin.lexer.KtTokens.ELVIS
 import org.jetbrains.kotlin.lexer.KtTokens.PLUS
 import org.jetbrains.kotlin.psi.*
@@ -26,14 +27,25 @@ class MoreStrictNullSafetyInspection : AbstractKotlinInspection() {
             override fun visitNamedFunction(function: KtNamedFunction) {
                 super.visitNamedFunction(function)
                 function.bodyExpression?.let { body ->
-                    val context = function.analyze(BodyResolveMode.PARTIAL)
-                    val functionReturnType = context.get(BindingContext.TYPE, function.typeReference)
-                    val bodyReturnType = body.resolveType()
-                    if (functionReturnType != null) {
-                        if(bodyReturnType.unwrap().isFlexible() && !functionReturnType.isFlexible() && !functionReturnType.isMarkedNullable) {
-                            registerProblem(holder, body)
-                        }
+                    checkExpressionBodyReturnType(function, body)
+                }
+            }
+
+            private fun checkExpressionBodyReturnType(callable: KtCallableDeclaration, body: KtExpression) {
+                val context = callable.analyze(BodyResolveMode.PARTIAL)
+                val functionReturnType = context.get(BindingContext.TYPE, callable.typeReference)
+                val bodyReturnType = body.resolveType()
+                if (functionReturnType != null) {
+                    if(bodyReturnType.unwrap().isFlexible() && !functionReturnType.isFlexible() && !functionReturnType.isMarkedNullable) {
+                        registerProblem(holder, body)
                     }
+                }
+            }
+
+            override fun visitProperty(property: KtProperty) {
+                super.visitProperty(property)
+                property.initializer?.let { body ->
+                    checkExpressionBodyReturnType(property, body)
                 }
             }
 

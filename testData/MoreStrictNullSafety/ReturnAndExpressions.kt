@@ -91,6 +91,26 @@ class ReturnAndExpressions {
     fun binaryBoth(): Value = <error descr="You are implicitly converting a platform type into a non-nullable type. This code might throw.">JavaClass.value()</error> + <error descr="You are implicitly converting a platform type into a non-nullable type. This code might throw.">JavaClass.value()</error>
     fun binaryBothNullable(): Value? = <error descr="You are implicitly converting a platform type into a non-nullable type. This code might throw.">JavaClass.value()</error> + <error descr="You are implicitly converting a platform type into a non-nullable type. This code might throw.">JavaClass.value()</error>
 
+    val property: Value = <error descr="You are implicitly converting a platform type into a non-nullable type. This code might throw.">JavaClass.value()</error>
+    val propertyNullable: Value? = JavaClass.value()
+
+    val propertyGetter: Value
+        get() {
+            <error descr="You are implicitly converting a platform type into a non-nullable type. This code might throw.">return JavaClass.value()</error>
+        }
+    val propertyGetterNullable: Value?
+        get() {
+            return JavaClass.value()
+        }
+
+    val propertyGetterBlock: Value
+        get() {
+            <error descr="You are implicitly converting a platform type into a non-nullable type. This code might throw.">return JavaClass.value()</error>
+        }
+    val propertyGetterBlockNullable: Value?
+        get() {
+            return JavaClass.value()
+        }
 
 }
 

@@ -8,7 +8,7 @@ import org.jetbrains.kotlin.idea.test.PluginTestCaseBase
 
 class TestStrictPlatformTypeNullSafetyInpection : KotlinLightCodeInsightFixtureTestCase() {
 
-    override fun getTestDataPath(): String = PluginTestCaseBase.getTestDataPathBase() + "/ImplicitPlatformTypeConversion"
+    override fun getTestDataPath(): String = PluginTestCaseBase.getTestDataPathBase() + "/MoreStrictNullSafety"
 
     override fun getProjectDescriptor(): LightProjectDescriptor = KotlinLightProjectDescriptor.INSTANCE
 
@@ -19,8 +19,8 @@ class TestStrictPlatformTypeNullSafetyInpection : KotlinLightCodeInsightFixtureT
 
 
     fun testConvertPlatformTypeOnReturn() {
-        myFixture.configureByFiles("ConvertPlatformTypeOnReturn.kt", "ValueExtension.kt", "MyClass.java", "Value.java")
-        myFixture.testHighlighting( "ConvertPlatformTypeOnReturn.kt")
+        myFixture.configureByFiles("ReturnAndExpressions.kt", "ValueExtension.kt", "MyClass.java", "Value.java")
+        myFixture.testHighlighting( "ReturnAndExpressions.kt")
     }
 
     //other cases: overriding things which takes platform type, assigning to variable
