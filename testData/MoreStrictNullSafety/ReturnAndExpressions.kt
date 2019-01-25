@@ -98,6 +98,14 @@ class ReturnAndExpressions {
         takingLambda <error descr="You are implicitly converting a platform type into a non-nullable type. This code might throw.">{ JavaClass.value() }</error>
     }
 
+    fun lambdaReferenced(): Unit {
+        fun takingLambda(f: () -> Value): Value {
+            return f()
+        }
+        val lambda = { JavaClass.value() }
+        takingLambda (<error descr="You are implicitly converting a platform type into a non-nullable type. This code might throw.">lambda</error>)
+    }
+
     fun lambdaNullable(): Unit {
         fun takingLambda(f: () -> Value?): Value? {
             return f()
