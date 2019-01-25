@@ -91,6 +91,16 @@ class ReturnAndExpressions {
     fun binaryBoth(): Value = <error descr="You are implicitly converting a platform type into a non-nullable type. This code might throw.">JavaClass.value()</error> + <error descr="You are implicitly converting a platform type into a non-nullable type. This code might throw.">JavaClass.value()</error>
     fun binaryBothNullable(): Value? = <error descr="You are implicitly converting a platform type into a non-nullable type. This code might throw.">JavaClass.value()</error> + <error descr="You are implicitly converting a platform type into a non-nullable type. This code might throw.">JavaClass.value()</error>
 
+    fun lambda(): Unit {
+        val values = Generic.from(JavaClass.value())
+        fun <A>takingLambda(xs: Generic<A>, f: (A) -> Value): Generic<Value> {
+            return xs.map(f)
+        }
+        takingLambda(values) <error descr="You are implicitly converting a platform type into a non-nullable type. This code might throw.">{ v -> v }</error>
+
+    }
+    //todo function reference instead of lambda
+    //todo return from lambda
     val property: Value = <error descr="You are implicitly converting a platform type into a non-nullable type. This code might throw.">JavaClass.value()</error>
     val propertyNullable: Value? = JavaClass.value()
 
@@ -112,6 +122,25 @@ class ReturnAndExpressions {
             return JavaClass.value()
         }
 
-}
 
-//add getters and setters
+}
+//Instantiating a function type
+//There are several ways to obtain an instance of a function type:
+//
+//Using a code block within a function literal, in one of the forms:
+//a lambda expression: { a, b -> a + b },
+//an anonymous function: fun(s: String): Int { return s.toIntOrNull() ?: 0 }
+//Function literals with receiver can be used as values of function types with receiver.
+//
+//Using a callable reference to an existing declaration:
+//a top-level, local, member, or extension function: ::isOdd, String::toInt,
+//a top-level, member, or extension property: List<Int>::size,
+//a constructor: ::Regex
+//These include bound callable references that point to a member of a particular instance: foo::toString.
+
+//fun parseAndInc(number: String?): Int {
+//    return number.let { Integer.parseInt(it) }
+//            .let { it -> it + 1 } ?: 0
+//}
+
+//generic functions

@@ -7,15 +7,17 @@ import com.intellij.psi.util.parentOfType
 import org.jetbrains.kotlin.idea.caches.resolve.analyze
 import org.jetbrains.kotlin.idea.debugger.sequence.psi.resolveType
 import org.jetbrains.kotlin.idea.inspections.AbstractKotlinInspection
-import org.jetbrains.kotlin.idea.refactoring.renderTrimmed
 import org.jetbrains.kotlin.lexer.KtTokens.ELVIS
 import org.jetbrains.kotlin.lexer.KtTokens.PLUS
 import org.jetbrains.kotlin.psi.*
 import org.jetbrains.kotlin.resolve.BindingContext
+import org.jetbrains.kotlin.resolve.calls.callUtil.getResolvedCall
 import org.jetbrains.kotlin.resolve.descriptorUtil.classId
 import org.jetbrains.kotlin.resolve.lazy.BodyResolveMode
 import org.jetbrains.kotlin.types.isFlexible
+import org.jetbrains.kotlin.types.isNullable
 import org.jetbrains.kotlinx.serialization.compiler.resolve.toClassDescriptor
+import kotlin.reflect.jvm.internal.impl.descriptors.impl.ValueParameterDescriptorImpl
 
 
 class MoreStrictNullSafetyInspection : AbstractKotlinInspection() {
@@ -24,12 +26,6 @@ class MoreStrictNullSafetyInspection : AbstractKotlinInspection() {
 
     override fun buildVisitor(holder: ProblemsHolder, isOnTheFly: Boolean): PsiElementVisitor {
         return object : KtVisitorVoid() {
-            override fun visitNamedFunction(function: KtNamedFunction) {
-                super.visitNamedFunction(function)
-                function.bodyExpression?.let { body ->
-                    checkExpressionBodyReturnType(function, body)
-                }
-            }
 
             private fun checkExpressionBodyReturnType(callable: KtCallableDeclaration, body: KtExpression) {
                 val context = callable.analyze(BodyResolveMode.PARTIAL)
@@ -42,10 +38,39 @@ class MoreStrictNullSafetyInspection : AbstractKotlinInspection() {
                 }
             }
 
+            override fun visitNamedFunction(function: KtNamedFunction) {
+                super.visitNamedFunction(function)
+                function.bodyExpression?.let { body ->
+                    checkExpressionBodyReturnType(function, body)
+                }
+            }
+
             override fun visitProperty(property: KtProperty) {
                 super.visitProperty(property)
                 property.initializer?.let { body ->
                     checkExpressionBodyReturnType(property, body)
+                }
+            }
+
+            override fun visitCallExpression(expression: KtCallExpression) {
+                super.visitCallExpression(expression)
+
+                if(expression.lambdaArguments.isNotEmpty()) {
+                    val ctx = expression.analyze(BodyResolveMode.FULL)
+                    val call = expression.getResolvedCall(ctx)
+                    call?.valueArguments?.forEach{(parameterDescriptor, argumentDescriptor) ->
+                        val type = parameterDescriptor.type
+                        if (type.toClassDescriptor.classId?.asString()?.matches("""kotlin/Function\d+""".toRegex()) == true) {
+                            val parameterLambdaReturnType = type.arguments.lastOrNull()?.type
+                            val argumentExpression = argumentDescriptor.arguments.firstOrNull()?.getArgumentExpression()
+                            val argumentLambdaReturnType = argumentExpression?.resolveType()?.arguments?.lastOrNull()?.type
+                            if(parameterLambdaReturnType != null && argumentLambdaReturnType != null &&
+                                !parameterLambdaReturnType.unwrap().isNullable() && argumentLambdaReturnType.isFlexible()) {
+                                registerProblem(holder, argumentExpression)
+                            }
+                        }
+
+                    }
                 }
             }
 
@@ -72,7 +97,6 @@ class MoreStrictNullSafetyInspection : AbstractKotlinInspection() {
                 super.visitWhenExpression(expression)
 
                 val type = expression.resolveType()
-
                 if (!type.isFlexible() && !type.isMarkedNullable) {
                     val whens = expression.entries
                     whens.forEach {

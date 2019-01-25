@@ -19,7 +19,8 @@ class TestStrictPlatformTypeNullSafetyInpection : KotlinLightCodeInsightFixtureT
 
 
     fun testConvertPlatformTypeOnReturn() {
-        myFixture.configureByFiles("ReturnAndExpressions.kt", "ValueExtension.kt", "MyClass.java", "Value.java")
+        myFixture.configureByFiles("ReturnAndExpressions.kt", "ValueExtension.kt", "MyClass.java",
+            "Value.java", "Generic.kt")
         myFixture.testHighlighting( "ReturnAndExpressions.kt")
     }
 
