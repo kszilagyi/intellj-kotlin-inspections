@@ -92,13 +92,33 @@ class ReturnAndExpressions {
     fun binaryBothNullable(): Value? = <error descr="You are implicitly converting a platform type into a non-nullable type. This code might throw.">JavaClass.value()</error> + <error descr="You are implicitly converting a platform type into a non-nullable type. This code might throw.">JavaClass.value()</error>
 
     fun lambda(): Unit {
-        val values = Generic.from(JavaClass.value())
-        fun <A>takingLambda(xs: Generic<A>, f: (A) -> Value): Generic<Value> {
-            return xs.map(f)
+        fun takingLambda(f: () -> Value): Value {
+            return f()
         }
-        takingLambda(values) <error descr="You are implicitly converting a platform type into a non-nullable type. This code might throw.">{ v -> v }</error>
-
+        takingLambda <error descr="You are implicitly converting a platform type into a non-nullable type. This code might throw.">{ JavaClass.value() }</error>
     }
+
+    fun lambdaNullable(): Unit {
+        fun takingLambda(f: () -> Value?): Value? {
+            return f()
+        }
+        takingLambda{ JavaClass.value() }
+    }
+
+    fun lambdaOneParam(): Unit {
+        fun takingLambda(f: (Int) -> Value): Value {
+            return f(1)
+        }
+        takingLambda <error descr="You are implicitly converting a platform type into a non-nullable type. This code might throw.">{ _ -> JavaClass.value() }</error>
+    }
+
+    fun lambdaMultiParam(): Unit {
+        fun takingLambda(f: (Int, Int, Int, Int) -> Value): Value {
+            return f(1, 2, 3, 4)
+        }
+        takingLambda <error descr="You are implicitly converting a platform type into a non-nullable type. This code might throw.">{ _, _, _, _ -> JavaClass.value() }</error>
+    }
+
     //todo function reference instead of lambda
     //todo return from lambda
     val property: Value = <error descr="You are implicitly converting a platform type into a non-nullable type. This code might throw.">JavaClass.value()</error>
