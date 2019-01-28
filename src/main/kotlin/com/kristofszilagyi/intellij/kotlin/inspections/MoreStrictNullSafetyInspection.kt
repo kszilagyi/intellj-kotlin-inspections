@@ -151,7 +151,7 @@ class MoreStrictNullSafetyInspection : AbstractKotlinInspection() {
                 val functionReturnType = if (expression.labelQualifier != null) {
                     val label = expression.getTargetLabel()
                     val labelledTarget = ctx.get(BindingContext.LABEL_TARGET, label)
-                    val function = labelledTarget as? KtFunctionLiteral
+                    val function = labelledTarget as? KtFunction
                     val functionContext = function?.analyze(BodyResolveMode.PARTIAL)
                     functionContext?.get(BindingContext.TYPE, function.typeReference)
                 } else {

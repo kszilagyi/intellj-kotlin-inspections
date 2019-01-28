@@ -155,6 +155,22 @@ class ReturnAndExpressions {
         return this.takingLambdaInlineNullable { return@takingLambdaInlineNullable JavaClass.value() }
     }
 
+    fun anonymousFunction(): Value {
+        return takingLambdaInline ( fun(): Value { <error descr="You are implicitly converting a platform type into a non-nullable type. This code might throw.">return JavaClass.value()</error> } )
+    }
+
+    fun anonymousFunctionNullable(): Value {
+        return takingLambdaInlineNullable ( fun(): Value? { return JavaClass.value() } )
+    }
+
+    fun anonymousFunctionLabeled(): Value {
+        return takingLambdaInline ( fun(): Value { <error descr="You are implicitly converting a platform type into a non-nullable type. This code might throw.">return@anonymousFunctionLabeled JavaClass.value()</error> } )
+    }
+
+    fun anonymousFunctionNullableLabeled(): Value? {
+        return takingLambdaInline ( fun(): Value { return@anonymousFunctionNullableLabeled JavaClass.value() } )
+    }
+
     //todo function reference instead of lambda
     //todo return from lambda
     val property: Value = <error descr="You are implicitly converting a platform type into a non-nullable type. This code might throw.">JavaClass.value()</error>
