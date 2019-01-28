@@ -17,7 +17,6 @@ import org.jetbrains.kotlin.resolve.lazy.BodyResolveMode
 import org.jetbrains.kotlin.types.isFlexible
 import org.jetbrains.kotlin.types.isNullable
 import org.jetbrains.kotlinx.serialization.compiler.resolve.toClassDescriptor
-import kotlin.reflect.jvm.internal.impl.descriptors.impl.ValueParameterDescriptorImpl
 
 
 class MoreStrictNullSafetyInspection : AbstractKotlinInspection() {
@@ -147,10 +146,20 @@ class MoreStrictNullSafetyInspection : AbstractKotlinInspection() {
 
             override fun visitReturnExpression(expression: KtReturnExpression) {
                 super.visitReturnExpression(expression)
+                val ctx = expression.analyze(BodyResolveMode.PARTIAL)
+
+                val functionReturnType = if (expression.labelQualifier != null) {
+                    val label = expression.getTargetLabel()
+                    val labelledTarget = ctx.get(BindingContext.LABEL_TARGET, label)
+                    val function = labelledTarget as? KtFunctionLiteral
+                    val functionContext = function?.analyze(BodyResolveMode.PARTIAL)
+                    functionContext?.get(BindingContext.TYPE, function.typeReference)
+                } else {
+                    val function: KtCallableDeclaration? =
+                        expression.parentOfType(KtNamedFunction::class) ?: expression.parentOfType(KtProperty::class)
+                    ctx.get(BindingContext.TYPE, function?.typeReference)
+                }
                 val typeInReturn = expression.returnedExpression?.resolveType()
-                val context = expression.analyze(BodyResolveMode.PARTIAL)
-                val functionReturnType = context.
-                    get(BindingContext.TYPE, expression.parentOfType(KtCallableDeclaration::class)?.typeReference)
 
                 if (typeInReturn != null && functionReturnType != null) {
                     if (typeInReturn.unwrap().isFlexible() && !functionReturnType.isFlexible() && !functionReturnType.isMarkedNullable) {
