@@ -171,8 +171,17 @@ class ReturnAndExpressions {
         return takingLambdaInline ( fun(): Value { return@anonymousFunctionNullableLabeled JavaClass.value() } )
     }
 
+    fun referredFun() = JavaClass.value()
+
+    fun functionReference(): Value {
+        return takingLambdaInline ( <error descr="You are implicitly converting a platform type into a non-nullable type. This code might throw.">::referredFun</error> )
+    }
+
+    fun functionReferenceNullable(): Value {
+        return takingLambdaInlineNullable(::referredFun)
+    }
+
     //todo function reference instead of lambda
-    //todo return from lambda
     val property: Value = <error descr="You are implicitly converting a platform type into a non-nullable type. This code might throw.">JavaClass.value()</error>
     val propertyNullable: Value? = JavaClass.value()
 
