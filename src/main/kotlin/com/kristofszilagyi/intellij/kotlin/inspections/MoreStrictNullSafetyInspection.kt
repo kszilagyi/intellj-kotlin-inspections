@@ -57,13 +57,18 @@ class MoreStrictNullSafetyInspection : AbstractKotlinInspection() {
                 val ctx = expression.analyze(BodyResolveMode.FULL)
                 val call = expression.getResolvedCall(ctx)
                 call?.valueArguments?.forEach{(parameterDescriptor, argumentDescriptor) ->
-                    val type = parameterDescriptor.type
-                    if (type.toClassDescriptor.classId?.asString()?.matches("""kotlin/Function\d+""".toRegex()) == true) {
-                        val parameterLambdaReturnType = type.arguments.lastOrNull()?.type
-                        val argumentExpression = argumentDescriptor.arguments.firstOrNull()?.getArgumentExpression()
+                    val parameterType = parameterDescriptor.type
+                    val argumentExpression = argumentDescriptor.arguments.firstOrNull()?.getArgumentExpression()
+
+                    if (parameterType.toClassDescriptor.classId?.asString()?.matches("""kotlin/Function\d+""".toRegex()) == true) {
+                        val parameterLambdaReturnType = parameterType.arguments.lastOrNull()?.type
                         val argumentLambdaReturnType = argumentExpression?.resolveType()?.arguments?.lastOrNull()?.type
                         if(parameterLambdaReturnType != null && argumentLambdaReturnType != null &&
                             !parameterLambdaReturnType.unwrap().isNullable() && argumentLambdaReturnType.isFlexible()) {
+                            registerProblem(holder, argumentExpression)
+                        }
+                    } else {
+                        if(!parameterType.isFlexible() && !parameterType.isMarkedNullable && argumentExpression?.resolveType()?.isFlexible() == true) {
                             registerProblem(holder, argumentExpression)
                         }
                     }

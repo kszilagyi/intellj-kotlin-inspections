@@ -203,6 +203,24 @@ class ReturnAndExpressions {
         }
 
 
+    fun function(value: Value) = value
+    fun functionNullable(value: Value?) = value
+
+    fun functionCall(): Unit {
+        function(<error descr="You are implicitly converting a platform type into a non-nullable type. This code might throw.">JavaClass.value()</error>)
+    }
+
+    fun functionCallNormal(): Unit {
+        function(Value())
+    }
+
+    fun functionCallNullable(): Unit {
+        functionNullable(JavaClass.value())
+    }
+
+    fun functionCallNormalNullable(): Unit {
+        functionNullable(Value())
+    }
 }
 
 //fun parseAndInc(number: String?): Int {
