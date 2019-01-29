@@ -236,11 +236,24 @@ class ReturnAndExpressions {
         val lambda = {v: Value? -> v}
         lambda(JavaClass.value())
     }
+
+    fun dotExpression() {
+        <error descr="You are implicitly converting a platform type into a non-nullable type. This code might throw.">JavaClass.value().name()</error>
+    }
+
+    fun dotExpressionNormal(){
+        Value().name()
+    }
+
+    fun dotExpressionNullable(){
+        JavaClass.value()?.name()
+    }
+
 }
 
 //fun parseAndInc(number: String?): Int {
 //    return number.let { Integer.parseInt(it) }
 //            .let { it -> it + 1 } ?: 0
 //}
-
+//overrides
 //generic functions
