@@ -27,5 +27,4 @@ class TestStrictPlatformTypeNullSafetyInpection : KotlinLightCodeInsightFixtureT
         myFixture.testHighlighting( "tests/FunctionCalls.kt")
     }
 
-    //other cases: overriding things which takes platform type, assigning to variable
 }

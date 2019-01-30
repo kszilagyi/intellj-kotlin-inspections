@@ -224,3 +224,4 @@ class ReturnAndExpressions {
 //return to java
 //overrides
 //generic functions
+//other cases: overriding things which takes platform type, assigning to variable
