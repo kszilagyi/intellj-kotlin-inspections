@@ -249,11 +249,44 @@ class ReturnAndExpressions {
         JavaClass.value()?.name()
     }
 
+    fun reverse() {
+        val number: String? = "1"
+        Integer.parseInt(<error descr="You are implicitly converting a nullable (or platform) type into platform type.">number</error>)
+    }
+
+    fun reverseCorrect() {
+        val number: String = "1"
+        Integer.parseInt(number)
+    }
+
+    fun reversePlatform() {
+        Integer.parseInt(<error descr="You are implicitly converting a nullable (or platform) type into platform type.">Value().name()</error>)
+    }
+
+    public inline fun <T, R> T.let(block: (T) -> R): R {
+        return block(this)
+    }
+
+
+    fun reverseLet() {
+        fun parse(number: String?): Int {
+            return number.let { Integer.parseInt(<error descr="You are implicitly converting a nullable (or platform) type into platform type.">it</error>) }
+        }
+    }
+
+    fun reverseLetNullable() {
+        fun parse(number: String?): Int {
+            return number?.let { Integer.parseInt(it) } ?: 0
+        }
+    }
+
+
 }
 
 //fun parseAndInc(number: String?): Int {
 //    return number.let { Integer.parseInt(it) }
 //            .let { it -> it + 1 } ?: 0
 //}
+//return to java
 //overrides
 //generic functions

@@ -72,6 +72,11 @@ class MoreStrictNullSafetyInspection : AbstractKotlinInspection() {
                         if(!parameterType.isFlexible() && !parameterType.isNullable() && argumentExpression?.resolveType()?.isFlexible() == true) {
                             registerProblemFromJava(holder, argumentExpression)
                         }
+                        else if (parameterType.isFlexible()) {
+                            val argumentType = argumentExpression?.resolveType()
+                            if (argumentType != null && argumentType.isNullable())
+                            registerProblemToJava(holder, argumentExpression)
+                        }
                     }
                 }
             }
@@ -190,6 +195,12 @@ class MoreStrictNullSafetyInspection : AbstractKotlinInspection() {
         fun registerProblemFromJava(holder: ProblemsHolder, expression: KtExpression) {
             holder.registerProblem(expression,
                 "You are implicitly converting a platform type into a non-nullable type. This code might throw.",
+                ProblemHighlightType.GENERIC_ERROR_OR_WARNING)
+        }
+
+        fun registerProblemToJava(holder: ProblemsHolder, expression: KtExpression) {
+            holder.registerProblem(expression,
+                "You are implicitly converting a nullable (or platform) type into platform type.",
                 ProblemHighlightType.GENERIC_ERROR_OR_WARNING)
         }
     }
