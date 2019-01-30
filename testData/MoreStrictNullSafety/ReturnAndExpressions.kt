@@ -237,6 +237,37 @@ class ReturnAndExpressions {
         lambda(JavaClass.value())
     }
 
+    fun functionCallReverse() {
+        val number: String? = "1"
+        Integer.parseInt(<error descr="You are implicitly converting a nullable (or platform) type into platform type.">number</error>)
+    }
+
+    fun functionCallReverseNonNull() {
+        val number: String = "1"
+        Integer.parseInt(number)
+    }
+
+    fun functionCallReversePlatform() {
+        Integer.parseInt(<error descr="You are implicitly converting a nullable (or platform) type into platform type.">Value().name()</error>)
+    }
+
+    public inline fun <T, R> T.let(block: (T) -> R): R {
+        return block(this)
+    }
+
+
+    fun functionCallReverseLet() {
+        fun parse(number: String?): Int {
+            return number.let { Integer.parseInt(<error descr="You are implicitly converting a nullable (or platform) type into platform type.">it</error>) }
+        }
+    }
+
+    fun functionCallReverseLetNullable() {
+        fun parse(number: String?): Int {
+            return number?.let { Integer.parseInt(it) } ?: 0
+        }
+    }
+
     fun dotExpression() {
         <error descr="You are implicitly converting a platform type into a non-nullable type. This code might throw.">JavaClass.value().name()</error>
     }
@@ -247,37 +278,6 @@ class ReturnAndExpressions {
 
     fun dotExpressionNullable(){
         JavaClass.value()?.name()
-    }
-
-    fun reverse() {
-        val number: String? = "1"
-        Integer.parseInt(<error descr="You are implicitly converting a nullable (or platform) type into platform type.">number</error>)
-    }
-
-    fun reverseCorrect() {
-        val number: String = "1"
-        Integer.parseInt(number)
-    }
-
-    fun reversePlatform() {
-        Integer.parseInt(<error descr="You are implicitly converting a nullable (or platform) type into platform type.">Value().name()</error>)
-    }
-
-    public inline fun <T, R> T.let(block: (T) -> R): R {
-        return block(this)
-    }
-
-
-    fun reverseLet() {
-        fun parse(number: String?): Int {
-            return number.let { Integer.parseInt(<error descr="You are implicitly converting a nullable (or platform) type into platform type.">it</error>) }
-        }
-    }
-
-    fun reverseLetNullable() {
-        fun parse(number: String?): Int {
-            return number?.let { Integer.parseInt(it) } ?: 0
-        }
     }
 
 
