@@ -15,13 +15,16 @@ class TestStrictPlatformTypeNullSafetyInpection : KotlinLightCodeInsightFixtureT
     override fun setUp() {
         super.setUp()
         myFixture.enableInspections(MoreStrictNullSafetyInspection())
+        myFixture.configureByFiles("ValueExtension.kt", "MyClass.java",
+            "Value.java", "Generic.kt")
     }
 
+    fun testReturnAndExpressions() {
+        myFixture.testHighlighting( "tests/ReturnAndExpressions.kt")
+    }
 
-    fun testConvertPlatformTypeOnReturn() {
-        myFixture.configureByFiles("ReturnAndExpressions.kt", "ValueExtension.kt", "MyClass.java",
-            "Value.java", "Generic.kt")
-        myFixture.testHighlighting( "ReturnAndExpressions.kt")
+    fun testFunctionCalls() {
+        myFixture.testHighlighting( "tests/FunctionCalls.kt")
     }
 
     //other cases: overriding things which takes platform type, assigning to variable
