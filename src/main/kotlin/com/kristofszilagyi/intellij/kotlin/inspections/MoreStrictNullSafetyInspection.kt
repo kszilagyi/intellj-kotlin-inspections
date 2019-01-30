@@ -32,8 +32,8 @@ class MoreStrictNullSafetyInspection : AbstractKotlinInspection() {
                 val functionReturnType = context.get(BindingContext.TYPE, callable.typeReference)
                 val bodyReturnType = body.resolveType()
                 if (functionReturnType != null) {
-                    if(bodyReturnType.unwrap().isFlexible() && !functionReturnType.isFlexible() && !functionReturnType.isMarkedNullable) {
-                        registerProblem(holder, body)
+                    if(bodyReturnType.unwrap().isFlexible() && !functionReturnType.isFlexible() && !functionReturnType.isNullable()) {
+                        registerProblemFromJava(holder, body)
                     }
                 }
             }
@@ -66,11 +66,11 @@ class MoreStrictNullSafetyInspection : AbstractKotlinInspection() {
                         val argumentLambdaReturnType = argumentExpression?.resolveType()?.arguments?.lastOrNull()?.type
                         if(parameterLambdaReturnType != null && argumentLambdaReturnType != null &&
                             !parameterLambdaReturnType.unwrap().isNullable() && argumentLambdaReturnType.isFlexible()) {
-                            registerProblem(holder, argumentExpression)
+                            registerProblemFromJava(holder, argumentExpression)
                         }
                     } else {
-                        if(!parameterType.isFlexible() && !parameterType.isMarkedNullable && argumentExpression?.resolveType()?.isFlexible() == true) {
-                            registerProblem(holder, argumentExpression)
+                        if(!parameterType.isFlexible() && !parameterType.isNullable() && argumentExpression?.resolveType()?.isFlexible() == true) {
+                            registerProblemFromJava(holder, argumentExpression)
                         }
                     }
                 }
@@ -81,15 +81,15 @@ class MoreStrictNullSafetyInspection : AbstractKotlinInspection() {
                 expression.analyze(BodyResolveMode.FULL) // without this the type of then and else is intermittently Unit (in the test)
                 val type = expression.resolveType()
 
-                if (!type.isFlexible() && !type.isMarkedNullable) {
+                if (!type.isFlexible() && !type.isNullable()) {
                     val thenBlock = expression.then
                     val elseBlock = expression.`else`
                     if (thenBlock != null && thenBlock.resolveType().isFlexible()) {
-                        registerProblem(holder, thenBlock)
+                        registerProblemFromJava(holder, thenBlock)
                     }
 
                     if (elseBlock != null && elseBlock.resolveType().isFlexible()) {
-                        registerProblem(holder, elseBlock)
+                        registerProblemFromJava(holder, elseBlock)
                     }
                 }
             }
@@ -99,12 +99,12 @@ class MoreStrictNullSafetyInspection : AbstractKotlinInspection() {
                 super.visitWhenExpression(expression)
 
                 val type = expression.resolveType()
-                if (!type.isFlexible() && !type.isMarkedNullable) {
+                if (!type.isFlexible() && !type.isNullable()) {
                     val whens = expression.entries
                     whens.forEach {
                         val entryExpression = it.expression
                         if (entryExpression != null && entryExpression.resolveType().isFlexible()) {
-                            registerProblem(holder, entryExpression)
+                            registerProblemFromJava(holder, entryExpression)
                         }
                     }
                 }
@@ -126,7 +126,7 @@ class MoreStrictNullSafetyInspection : AbstractKotlinInspection() {
                 super.visitBinaryExpression(expression)
 
                 val type = expression.resolveType()
-                if (!type.isFlexible() && !type.isMarkedNullable && !isStringConcat(expression)) {
+                if (!type.isFlexible() && !type.isNullable() && !isStringConcat(expression)) {
                     val leftBlock = expression.left
                     val rightBlock = expression.right
                     val calledFunction = (expression.operationReference.reference?.resolve() as? KtCallableDeclaration)
@@ -135,16 +135,16 @@ class MoreStrictNullSafetyInspection : AbstractKotlinInspection() {
                     if (leftBlock != null && leftBlock.resolveType().isFlexible()
                             && expression.operationReference.operationSignTokenType != ELVIS) {
                         val receiverType = operatorContext?.get(BindingContext.TYPE, calledFunction.receiverTypeReference)
-                        if (receiverType == null || !receiverType.isMarkedNullable) {
-                            registerProblem(holder, leftBlock)
+                        if (receiverType == null || !receiverType.isNullable()) {
+                            registerProblemFromJava(holder, leftBlock)
                         }
                     }
 
                     if (rightBlock != null && rightBlock.resolveType().isFlexible()) {
                         val parameterType = operatorContext?.get(BindingContext.TYPE,
                             calledFunction.valueParameterList?.parameters?.firstOrNull()?.typeReference)
-                        if (parameterType == null || !parameterType.isMarkedNullable) {
-                            registerProblem(holder, rightBlock)
+                        if (parameterType == null || !parameterType.isNullable()) {
+                            registerProblemFromJava(holder, rightBlock)
                         }
                     }
                 }
@@ -168,8 +168,8 @@ class MoreStrictNullSafetyInspection : AbstractKotlinInspection() {
                 val typeInReturn = expression.returnedExpression?.resolveType()
 
                 if (typeInReturn != null && functionReturnType != null) {
-                    if (typeInReturn.unwrap().isFlexible() && !functionReturnType.isFlexible() && !functionReturnType.isMarkedNullable) {
-                        registerProblem(holder, expression)
+                    if (typeInReturn.unwrap().isFlexible() && !functionReturnType.isFlexible() && !functionReturnType.isNullable()) {
+                        registerProblemFromJava(holder, expression)
                     }
                 }
             }
@@ -179,7 +179,7 @@ class MoreStrictNullSafetyInspection : AbstractKotlinInspection() {
                 val ctx = expression.analyze(BodyResolveMode.PARTIAL)
                 val receiverType = expression.receiverExpression.getType(ctx)
                 if(receiverType?.isFlexible() == true) {
-                    registerProblem(holder, expression)
+                    registerProblemFromJava(holder, expression)
                 }
             }
 
@@ -187,7 +187,7 @@ class MoreStrictNullSafetyInspection : AbstractKotlinInspection() {
     }
 
     companion object {
-        fun registerProblem(holder: ProblemsHolder, expression: KtExpression) {
+        fun registerProblemFromJava(holder: ProblemsHolder, expression: KtExpression) {
             holder.registerProblem(expression,
                 "You are implicitly converting a platform type into a non-nullable type. This code might throw.",
                 ProblemHighlightType.GENERIC_ERROR_OR_WARNING)
