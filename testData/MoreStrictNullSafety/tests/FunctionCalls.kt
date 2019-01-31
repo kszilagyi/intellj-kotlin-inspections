@@ -68,3 +68,8 @@ fun functionCallReverseLamda() {
     val value: Value? = null
     JavaClass.operate{_, _ -> <error descr="You are implicitly converting a nullable (or platform) type into platform type.">value</error> }
 }
+
+fun functionCallReverseLamdaSafe() {
+    val value = Value()
+    JavaClass.operate{_, _ -> value }
+}
