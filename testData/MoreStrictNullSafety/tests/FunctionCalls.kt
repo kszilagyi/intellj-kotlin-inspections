@@ -63,3 +63,8 @@ fun functionCallReverseLetNullable() {
         return number?.let { Integer.parseInt(it) } ?: 0
     }
 }
+
+fun functionCallReverseLamda() {
+    val value: Value? = null
+    JavaClass.operate{_, _ -> <error descr="You are implicitly converting a nullable (or platform) type into platform type.">value</error> }
+}
