@@ -2,7 +2,7 @@ fun lambda(): Unit {
     fun takingLambda(f: () -> Value): Value {
         return f()
     }
-    takingLambda <error descr="You are implicitly converting a platform type into a non-nullable type. This code might throw.">{ JavaClass.value() }</error>
+    takingLambda <error descr="Implicit conversion of platform type to non-nullable">{ JavaClass.value() }</error>
 }
 
 fun lambdaReferenced(): Unit {
@@ -10,7 +10,7 @@ fun lambdaReferenced(): Unit {
         return f()
     }
     val lambda = { JavaClass.value() }
-    takingLambda (<error descr="You are implicitly converting a platform type into a non-nullable type. This code might throw.">lambda</error>)
+    takingLambda (<error descr="Implicit conversion of platform type to non-nullable">lambda</error>)
 }
 
 fun lambdaNullable(): Unit {
@@ -24,14 +24,14 @@ fun lambdaOneParam(): Unit {
     fun takingLambda(f: (Int) -> Value): Value {
         return f(1)
     }
-    takingLambda <error descr="You are implicitly converting a platform type into a non-nullable type. This code might throw.">{ _ -> JavaClass.value() }</error>
+    takingLambda <error descr="Implicit conversion of platform type to non-nullable">{ _ -> JavaClass.value() }</error>
 }
 
 fun lambdaMultiParam(): Unit {
     fun takingLambda(f: (Int, Int, Int, Int) -> Value): Value {
         return f(1, 2, 3, 4)
     }
-    takingLambda <error descr="You are implicitly converting a platform type into a non-nullable type. This code might throw.">{ _, _, _, _ -> JavaClass.value() }</error>
+    takingLambda <error descr="Implicit conversion of platform type to non-nullable">{ _, _, _, _ -> JavaClass.value() }</error>
 }
 
 private inline fun takingLambdaInline(f: () -> Value): Value {
@@ -39,7 +39,7 @@ private inline fun takingLambdaInline(f: () -> Value): Value {
 }
 
 fun lambdaWithReturn(): Value {
-    return takingLambdaInline { <error descr="You are implicitly converting a platform type into a non-nullable type. This code might throw.">return JavaClass.value()</error> }
+    return takingLambdaInline { <error descr="Implicit conversion of platform type to non-nullable">return JavaClass.value()</error> }
 }
 
 private inline fun takingLambdaInlineNullable(f: () -> Value?): Value {
@@ -47,7 +47,7 @@ private inline fun takingLambdaInlineNullable(f: () -> Value?): Value {
 }
 
 fun lambdaWithReturnNullableLambda(): Value {
-    return takingLambdaInlineNullable { <error descr="You are implicitly converting a platform type into a non-nullable type. This code might throw.">return JavaClass.value()</error> }
+    return takingLambdaInlineNullable { <error descr="Implicit conversion of platform type to non-nullable">return JavaClass.value()</error> }
 }
 
 fun lambdaWithReturnNullableFunction(): Value? {
@@ -55,7 +55,7 @@ fun lambdaWithReturnNullableFunction(): Value? {
 }
 
 fun lambdaWithReturnLabeled(): Value {
-    return takingLambdaInline <error descr="You are implicitly converting a platform type into a non-nullable type. This code might throw.">{ return@takingLambdaInline JavaClass.value() }</error>
+    return takingLambdaInline <error descr="Implicit conversion of platform type to non-nullable">{ return@takingLambdaInline JavaClass.value() }</error>
 }
 
 fun lambdaWithReturnNullableLambdaLabeled(): Value {
@@ -63,7 +63,7 @@ fun lambdaWithReturnNullableLambdaLabeled(): Value {
 }
 
 fun anonymousFunction(): Value {
-    return takingLambdaInline ( fun(): Value { <error descr="You are implicitly converting a platform type into a non-nullable type. This code might throw.">return JavaClass.value()</error> } )
+    return takingLambdaInline ( fun(): Value { <error descr="Implicit conversion of platform type to non-nullable">return JavaClass.value()</error> } )
 }
 
 fun anonymousFunctionNullable(): Value {
@@ -71,7 +71,7 @@ fun anonymousFunctionNullable(): Value {
 }
 
 fun anonymousFunctionLabeled(): Value {
-    return takingLambdaInline ( fun(): Value { <error descr="You are implicitly converting a platform type into a non-nullable type. This code might throw.">return@anonymousFunctionLabeled JavaClass.value()</error> } )
+    return takingLambdaInline ( fun(): Value { <error descr="Implicit conversion of platform type to non-nullable">return@anonymousFunctionLabeled JavaClass.value()</error> } )
 }
 
 fun anonymousFunctionNullableLabeled(): Value? {
@@ -81,7 +81,7 @@ fun anonymousFunctionNullableLabeled(): Value? {
 fun referredFun() = JavaClass.value()
 
 fun functionReference(): Value {
-    return takingLambdaInline ( <error descr="You are implicitly converting a platform type into a non-nullable type. This code might throw.">::referredFun</error> )
+    return takingLambdaInline ( <error descr="Implicit conversion of platform type to non-nullable">::referredFun</error> )
 }
 
 fun functionReferenceNullable(): Value {

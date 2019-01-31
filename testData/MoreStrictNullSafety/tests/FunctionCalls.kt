@@ -3,7 +3,7 @@ fun function(value: Value) = value
 fun functionNullable(value: Value?) = value
 
 fun functionCall(): Unit {
-    function(<error descr="You are implicitly converting a platform type into a non-nullable type. This code might throw.">JavaClass.value()</error>)
+    function(<error descr="Implicit conversion of platform type to non-nullable">JavaClass.value()</error>)
 }
 
 fun functionCallNormal(): Unit {
@@ -20,7 +20,7 @@ fun functionCallNormalNullable(): Unit {
 
 fun lambdaCall(): Unit {
     val lambda = {v: Value -> v}
-    lambda(<error descr="You are implicitly converting a platform type into a non-nullable type. This code might throw.">JavaClass.value()</error>)
+    lambda(<error descr="Implicit conversion of platform type to non-nullable">JavaClass.value()</error>)
 }
 
 fun lambdaCallNormal(): Unit {
@@ -35,7 +35,7 @@ fun lambdaCallNullable(): Unit {
 
 fun functionCallReverse() {
     val number: String? = "1"
-    Integer.parseInt(<error descr="You are implicitly converting a nullable (or platform) type into platform type.">number</error>)
+    Integer.parseInt(<error descr="Passing nullable to Java code">number</error>)
 }
 
 fun functionCallReverseNonNull() {
@@ -44,7 +44,7 @@ fun functionCallReverseNonNull() {
 }
 
 fun functionCallReversePlatform() {
-    Integer.parseInt(<error descr="You are implicitly converting a nullable (or platform) type into platform type.">Value().name()</error>)
+    Integer.parseInt(<error descr="Passing nullable to Java code">Value().name()</error>)
 }
 
 public inline fun <T, R> T.let(block: (T) -> R): R {
@@ -54,7 +54,7 @@ public inline fun <T, R> T.let(block: (T) -> R): R {
 
 fun functionCallReverseLet() {
     fun parse(number: String?): Int {
-        return number.let { Integer.parseInt(<error descr="You are implicitly converting a nullable (or platform) type into platform type.">it</error>) }
+        return number.let { Integer.parseInt(<error descr="Passing nullable to Java code">it</error>) }
     }
 }
 
@@ -66,7 +66,7 @@ fun functionCallReverseLetNullable() {
 
 fun functionCallReverseLamda() {
     val value: Value? = null
-    JavaClass.operate{_, _ -> <error descr="You are implicitly converting a nullable (or platform) type into platform type.">value</error> }
+    JavaClass.operate{_, _ -> <error descr="Passing nullable to Java code">value</error> }
 }
 
 fun functionCallReverseLamdaSafe() {

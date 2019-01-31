@@ -194,13 +194,13 @@ class MoreStrictNullSafetyInspection : AbstractKotlinInspection() {
     companion object {
         fun registerProblemFromJava(holder: ProblemsHolder, expression: KtExpression) {
             holder.registerProblem(expression,
-                "You are implicitly converting a platform type into a non-nullable type. This code might throw.",
+                "Implicit conversion of platform type to non-nullable",
                 ProblemHighlightType.GENERIC_ERROR_OR_WARNING)
         }
 
         fun registerProblemToJava(holder: ProblemsHolder, expression: KtExpression) {
             holder.registerProblem(expression,
-                "You are implicitly converting a nullable (or platform) type into platform type.",
+                "Passing nullable to Java code",
                 ProblemHighlightType.GENERIC_ERROR_OR_WARNING)
         }
     }
