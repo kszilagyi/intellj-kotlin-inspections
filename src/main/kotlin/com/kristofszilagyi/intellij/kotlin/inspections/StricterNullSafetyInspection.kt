@@ -20,9 +20,14 @@ import org.jetbrains.kotlin.types.isNullable
 import org.jetbrains.kotlinx.serialization.compiler.resolve.toClassDescriptor
 
 
-class MoreStrictNullSafetyInspection : AbstractKotlinInspection() {
+class StricterNullSafetyInspection : AbstractKotlinInspection() {
 
-    override fun getShortName(): String = "MoreStrictNullSafety"
+    override fun getShortName(): String = "StricterNullSafety"
+
+    override fun getStaticDescription(): String? {
+        return "Using platform types as non-nullable or passing in nullable types (or platform types as we don't know their nullability)" +
+                " to Java code is unsafe and might result in NullPointerException. You have to explicitly decide about these cases with ... and ... "
+    }
 
     override fun buildVisitor(holder: ProblemsHolder, isOnTheFly: Boolean): PsiElementVisitor {
         return object : KtVisitorVoid() {

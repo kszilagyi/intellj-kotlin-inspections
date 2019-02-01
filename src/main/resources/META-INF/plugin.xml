@@ -11,13 +11,14 @@
     <extensions defaultExtensionNs="com.intellij">
         <compileServer.plugin classpath="jps/kotlin-jps-plugin.jar;kotlin-stdlib.jar;kotlin-reflect.jar;kotlin-plugin.jar"/>
 
-        <localInspection implementationClass="com.kristofszilagyi.intellij.kotlin.inspections.MoreStrictNullSafetyInspection"
-                         displayName="Return platform type"
+        <localInspection implementationClass="com.kristofszilagyi.intellij.kotlin.inspections.StricterNullSafetyInspection"
+                         displayName="Stricter null safety"
                          groupPath="Kotlin"
                          groupName="Probably bugs"
                          enabledByDefault="true"
                          level="ERROR"
                          language="kotlin"
+                         hasStaticDescription="true"
         />
     </extensions>
 </idea-plugin>

@@ -1,7 +1,7 @@
 package com.kristofszilagyi.intellj.kotlin.inspections
 
 import com.intellij.testFramework.LightProjectDescriptor
-import com.kristofszilagyi.intellij.kotlin.inspections.MoreStrictNullSafetyInspection
+import com.kristofszilagyi.intellij.kotlin.inspections.StricterNullSafetyInspection
 import org.jetbrains.kotlin.idea.test.KotlinLightCodeInsightFixtureTestCase
 import org.jetbrains.kotlin.idea.test.KotlinLightProjectDescriptor
 import org.jetbrains.kotlin.idea.test.PluginTestCaseBase
@@ -14,7 +14,7 @@ class TestStrictPlatformTypeNullSafetyInpection : KotlinLightCodeInsightFixtureT
 
     override fun setUp() {
         super.setUp()
-        myFixture.enableInspections(MoreStrictNullSafetyInspection())
+        myFixture.enableInspections(StricterNullSafetyInspection())
         myFixture.configureByFiles("ValueExtension.kt", "JavaClass.java",
             "Value.java", "Generic.kt")
     }
