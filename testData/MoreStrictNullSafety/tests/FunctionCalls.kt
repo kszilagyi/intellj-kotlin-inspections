@@ -66,7 +66,7 @@ fun functionCallReverseLetNullable() {
 
 fun functionCallReverseLamda() {
     val value: Value? = null
-    JavaClass.operate{_, _ -> <error descr="Passing nullable to Java code">value</error> }
+    JavaClass.operate<error descr="Passing nullable to Java code">{_, _ -> value }</error>
 }
 
 fun functionCallReverseLamdaSafe() {

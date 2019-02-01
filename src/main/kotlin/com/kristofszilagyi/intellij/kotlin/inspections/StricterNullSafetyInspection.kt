@@ -65,22 +65,23 @@ class StricterNullSafetyInspection : AbstractKotlinInspection() {
                 call?.valueArguments?.forEach{(parameterDescriptor, argumentDescriptor) ->
                     val parameterType = parameterDescriptor.type
                     val argumentExpression = argumentDescriptor.arguments.firstOrNull()?.getArgumentExpression()
-
-                    if (parameterType.toClassDescriptor.classId?.asString()?.matches("""kotlin/Function\d+""".toRegex()) == true) {
-                        val parameterLambdaReturnType = parameterType.arguments.lastOrNull()?.type
-                        val argumentLambdaReturnType = argumentExpression?.resolveType()?.arguments?.lastOrNull()?.type
-                        if(parameterLambdaReturnType != null && argumentLambdaReturnType != null &&
-                            !parameterLambdaReturnType.unwrap().isNullable() && argumentLambdaReturnType.isFlexible()) {
-                            registerProblemFromJava(holder, argumentExpression)
-                        }
-                    } else {
-                        if(!parameterType.isFlexible() && !parameterType.isNullable() && argumentExpression?.resolveType()?.isFlexible() == true) {
-                            registerProblemFromJava(holder, argumentExpression)
-                        }
-                        else if (parameterType.isFlexible()) {
-                            val argumentType = argumentExpression?.resolveType()
-                            if (argumentType != null && argumentType.isNullable())
-                            registerProblemToJava(holder, argumentExpression)
+                    if (argumentExpression != null) {
+                        if (parameterType.toClassDescriptor.classId?.asString()?.matches("""kotlin/Function\d+""".toRegex()) == true) {
+                            val parameterLambdaReturnType = parameterType.arguments.lastOrNull()?.type
+                            val argumentLambdaReturnType = argumentExpression.resolveType().arguments.lastOrNull()?.type
+                            if (parameterLambdaReturnType != null && argumentLambdaReturnType != null &&
+                                !parameterLambdaReturnType.unwrap().isNullable() && argumentLambdaReturnType.isFlexible()
+                            ) {
+                                registerProblemFromJava(holder, argumentExpression)
+                            } else if (parameterLambdaReturnType?.isFlexible() == true && argumentLambdaReturnType?.isNullable() == true) {
+                                registerProblemToJava(holder, argumentExpression)
+                            }
+                        } else {
+                            if (!parameterType.isFlexible() && !parameterType.isNullable() && argumentExpression.resolveType().isFlexible()) {
+                                registerProblemFromJava(holder, argumentExpression)
+                            } else if (parameterType.isFlexible() && argumentExpression.resolveType().isNullable()) {
+                                registerProblemToJava(holder, argumentExpression)
+                            }
                         }
                     }
                 }
