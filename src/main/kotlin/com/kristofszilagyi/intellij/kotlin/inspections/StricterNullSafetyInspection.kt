@@ -2,11 +2,12 @@ package com.kristofszilagyi.intellij.kotlin.inspections
 
 import com.intellij.codeInspection.ProblemHighlightType
 import com.intellij.codeInspection.ProblemsHolder
+import com.intellij.openapi.diagnostic.Logger
 import com.intellij.psi.PsiElementVisitor
 import com.intellij.psi.util.parentOfType
 import org.jetbrains.kotlin.idea.caches.resolve.analyze
-import org.jetbrains.kotlin.idea.debugger.sequence.psi.resolveType
 import org.jetbrains.kotlin.idea.inspections.AbstractKotlinInspection
+import org.jetbrains.kotlin.idea.refactoring.renderTrimmed
 import org.jetbrains.kotlin.lexer.KtTokens.ELVIS
 import org.jetbrains.kotlin.lexer.KtTokens.PLUS
 import org.jetbrains.kotlin.psi.*
@@ -15,6 +16,7 @@ import org.jetbrains.kotlin.resolve.calls.callUtil.getResolvedCall
 import org.jetbrains.kotlin.resolve.calls.callUtil.getType
 import org.jetbrains.kotlin.resolve.descriptorUtil.classId
 import org.jetbrains.kotlin.resolve.lazy.BodyResolveMode
+import org.jetbrains.kotlin.types.KotlinType
 import org.jetbrains.kotlin.types.isFlexible
 import org.jetbrains.kotlin.types.isNullable
 import org.jetbrains.kotlinx.serialization.compiler.resolve.toClassDescriptor
@@ -35,8 +37,8 @@ class StricterNullSafetyInspection : AbstractKotlinInspection() {
             private fun checkExpressionBodyReturnType(callable: KtCallableDeclaration, body: KtExpression) {
                 val context = callable.analyze(BodyResolveMode.PARTIAL)
                 val functionReturnType = context.get(BindingContext.TYPE, callable.typeReference)
-                val bodyReturnType = body.resolveType()
-                if (functionReturnType != null) {
+                val bodyReturnType = body.safeResolveType()
+                if (functionReturnType != null && bodyReturnType != null) {
                     if(bodyReturnType.unwrap().isFlexible() && !functionReturnType.isFlexible() && !functionReturnType.isNullable()) {
                         registerProblemFromJava(holder, body)
                     }
@@ -68,7 +70,7 @@ class StricterNullSafetyInspection : AbstractKotlinInspection() {
                     if (argumentExpression != null) {
                         if (parameterType.toClassDescriptor.classId?.asString()?.matches("""kotlin/Function\d+""".toRegex()) == true) {
                             val parameterLambdaReturnType = parameterType.arguments.lastOrNull()?.type
-                            val argumentLambdaReturnType = argumentExpression.resolveType().arguments.lastOrNull()?.type
+                            val argumentLambdaReturnType = argumentExpression.safeResolveType()?.arguments?.lastOrNull()?.type
                             if (parameterLambdaReturnType != null && argumentLambdaReturnType != null &&
                                 !parameterLambdaReturnType.unwrap().isNullable() && argumentLambdaReturnType.isFlexible()
                             ) {
@@ -77,9 +79,10 @@ class StricterNullSafetyInspection : AbstractKotlinInspection() {
                                 registerProblemToJava(holder, argumentExpression)
                             }
                         } else {
-                            if (!parameterType.isFlexible() && !parameterType.isNullable() && argumentExpression.resolveType().isFlexible()) {
+                            if (!parameterType.isFlexible() && !parameterType.isNullable() &&
+                                    argumentExpression.safeResolveType()?.isFlexible() == true) {
                                 registerProblemFromJava(holder, argumentExpression)
-                            } else if (parameterType.isFlexible() && argumentExpression.resolveType().isNullable()) {
+                            } else if (parameterType.isFlexible() && argumentExpression.safeResolveType()?.isNullable() == true) {
                                 registerProblemToJava(holder, argumentExpression)
                             }
                         }
@@ -90,16 +93,16 @@ class StricterNullSafetyInspection : AbstractKotlinInspection() {
             override fun visitIfExpression(expression: KtIfExpression) {
                 super.visitIfExpression(expression)
                 expression.analyze(BodyResolveMode.FULL) // without this the type of then and else is intermittently Unit (in the test)
-                val type = expression.resolveType()
+                val type = expression.safeResolveType()
 
-                if (!type.isFlexible() && !type.isNullable()) {
+                if (type != null && !type.isFlexible() && !type.isNullable()) {
                     val thenBlock = expression.then
                     val elseBlock = expression.`else`
-                    if (thenBlock != null && thenBlock.resolveType().isFlexible()) {
+                    if (thenBlock != null && thenBlock.safeResolveType()?.isFlexible() == true) {
                         registerProblemFromJava(holder, thenBlock)
                     }
 
-                    if (elseBlock != null && elseBlock.resolveType().isFlexible()) {
+                    if (elseBlock != null && elseBlock.safeResolveType()?.isFlexible() == true) {
                         registerProblemFromJava(holder, elseBlock)
                     }
                 }
@@ -109,12 +112,12 @@ class StricterNullSafetyInspection : AbstractKotlinInspection() {
             override fun visitWhenExpression(expression: KtWhenExpression) {
                 super.visitWhenExpression(expression)
 
-                val type = expression.resolveType()
-                if (!type.isFlexible() && !type.isNullable()) {
+                val type = expression.safeResolveType()
+                if (type != null && !type.isFlexible() && !type.isNullable()) {
                     val whens = expression.entries
                     whens.forEach {
                         val entryExpression = it.expression
-                        if (entryExpression != null && entryExpression.resolveType().isFlexible()) {
+                        if (entryExpression != null && entryExpression.safeResolveType()?.isFlexible() == true) {
                             registerProblemFromJava(holder, entryExpression)
                         }
                     }
@@ -123,8 +126,8 @@ class StricterNullSafetyInspection : AbstractKotlinInspection() {
 
             private fun isStringConcat(expression: KtBinaryExpression): Boolean {
                 if (expression.operationReference.operationSignTokenType == PLUS) {
-                    val leftType = expression.left?.resolveType()
-                    val rightType =  expression.right?.resolveType()
+                    val leftType = expression.left?.safeResolveType()
+                    val rightType =  expression.right?.safeResolveType()
                     if (leftType?.unwrap()?.toClassDescriptor?.classId?.asString() == "kotlin/String" &&
                         rightType?.unwrap()?.toClassDescriptor?.classId?.asString() == "kotlin/String") {
                         return true
@@ -136,14 +139,14 @@ class StricterNullSafetyInspection : AbstractKotlinInspection() {
             override fun visitBinaryExpression(expression: KtBinaryExpression) {
                 super.visitBinaryExpression(expression)
 
-                val type = expression.resolveType()
-                if (!type.isFlexible() && !type.isNullable() && !isStringConcat(expression)) {
+                val type = expression.safeResolveType()
+                if (type != null && !type.isFlexible() && !type.isNullable() && !isStringConcat(expression)) {
                     val leftBlock = expression.left
                     val rightBlock = expression.right
                     val calledFunction = (expression.operationReference.reference?.resolve() as? KtCallableDeclaration)
 
                     val operatorContext = calledFunction?.analyze(BodyResolveMode.FULL)
-                    if (leftBlock != null && leftBlock.resolveType().isFlexible()
+                    if (leftBlock != null && leftBlock.safeResolveType()?.isFlexible() == true
                             && expression.operationReference.operationSignTokenType != ELVIS) {
                         val receiverType = operatorContext?.get(BindingContext.TYPE, calledFunction.receiverTypeReference)
                         if (receiverType == null || !receiverType.isNullable()) {
@@ -151,7 +154,7 @@ class StricterNullSafetyInspection : AbstractKotlinInspection() {
                         }
                     }
 
-                    if (rightBlock != null && rightBlock.resolveType().isFlexible()) {
+                    if (rightBlock != null && rightBlock.safeResolveType()?.isFlexible() == true) {
                         val parameterType = operatorContext?.get(BindingContext.TYPE,
                             calledFunction.valueParameterList?.parameters?.firstOrNull()?.typeReference)
                         if (parameterType == null || !parameterType.isNullable()) {
@@ -176,7 +179,7 @@ class StricterNullSafetyInspection : AbstractKotlinInspection() {
                         expression.parentOfType(KtNamedFunction::class) ?: expression.parentOfType(KtProperty::class)
                     ctx.get(BindingContext.TYPE, function?.typeReference)
                 }
-                val typeInReturn = expression.returnedExpression?.resolveType()
+                val typeInReturn = expression.returnedExpression?.safeResolveType()
 
                 if (typeInReturn != null && functionReturnType != null) {
                     if (typeInReturn.unwrap().isFlexible() && !functionReturnType.isFlexible() && !functionReturnType.isNullable()) {
@@ -197,16 +200,26 @@ class StricterNullSafetyInspection : AbstractKotlinInspection() {
     }
 
     companion object {
-        fun registerProblemFromJava(holder: ProblemsHolder, expression: KtExpression) {
+        private val logger = Logger.getInstance(this::class.java)
+
+        private fun registerProblemFromJava(holder: ProblemsHolder, expression: KtExpression) {
             holder.registerProblem(expression,
                 "Implicit conversion of platform type to non-nullable",
                 ProblemHighlightType.GENERIC_ERROR_OR_WARNING)
         }
 
-        fun registerProblemToJava(holder: ProblemsHolder, expression: KtExpression) {
+        private fun registerProblemToJava(holder: ProblemsHolder, expression: KtExpression) {
             holder.registerProblem(expression,
                 "Passing nullable to Java code",
                 ProblemHighlightType.GENERIC_ERROR_OR_WARNING)
+        }
+
+        private fun KtExpression.safeResolveType(): KotlinType? {
+            val type = this.analyze(BodyResolveMode.PARTIAL).getType(this)
+            if (type == null) {
+                logger.info("Couldn't resolve type for ${this.renderTrimmed()}")
+            }
+            return type
         }
     }
 }
