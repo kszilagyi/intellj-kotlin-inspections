@@ -193,8 +193,9 @@ class StricterNullSafetyInspection : AbstractKotlinInspection() {
                 super.visitDotQualifiedExpression(expression)
                 val ctx = expression.analyze(BodyResolveMode.PARTIAL)
                 val receiverType = expression.receiverExpression.getType(ctx)
-                if(receiverType?.isFlexible() == true) {
-                    registerProblemFromJava(holder, expression)
+                val selectorExpression = expression.selectorExpression
+                if(receiverType?.isFlexible() == true && selectorExpression != null) {
+                    registerProblemWithMessage(holder, selectorExpression, "Unsafe call on platform type")
                 }
             }
         }
@@ -204,8 +205,13 @@ class StricterNullSafetyInspection : AbstractKotlinInspection() {
         private val logger = Logger.getInstance(this::class.java)
 
         private fun registerProblemFromJava(holder: ProblemsHolder, expression: KtExpression) {
+            registerProblemWithMessage(holder, expression,
+                "Implicit conversion of platform type to non-nullable")
+        }
+
+        private fun registerProblemWithMessage(holder: ProblemsHolder, expression: KtExpression, message: String) {
             holder.registerProblem(expression,
-                "Implicit conversion of platform type to non-nullable",
+                message,
                 ProblemHighlightType.GENERIC_ERROR_OR_WARNING)
         }
 
@@ -214,9 +220,7 @@ class StricterNullSafetyInspection : AbstractKotlinInspection() {
             val typeString = if(platform) "platform type"
                              else "nullable"
 
-            holder.registerProblem(expression,
-                "Passing $typeString to Java code",
-                ProblemHighlightType.GENERIC_ERROR_OR_WARNING)
+            registerProblemWithMessage(holder, expression, "Passing $typeString to Java code")
         }
 
         private fun KtExpression.safeResolveType(): KotlinType? {

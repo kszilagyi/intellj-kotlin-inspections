@@ -114,7 +114,7 @@ class ReturnAndExpressions {
         }
 
     fun dotExpression() {
-        <error descr="Implicit conversion of platform type to non-nullable">JavaClass.value().name()</error>
+        JavaClass.value().<error descr="Unsafe call on platform type">name()</error>
     }
 
     fun dotExpressionNormal(){
