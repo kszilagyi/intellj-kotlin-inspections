@@ -193,7 +193,6 @@ class StricterNullSafetyInspection : AbstractKotlinInspection() {
                     registerProblemFromJava(holder, expression)
                 }
             }
-
         }
     }
 

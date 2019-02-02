@@ -128,12 +128,5 @@ class ReturnAndExpressions {
 
 }
 
-//fun parseAndInc(number: String?): Int {
-//    return number.let { Integer.parseInt(it) }
-//            .let { it -> it + 1 } ?: 0
-//}
-//return to java
-//overrides
 //generic functions
-//other cases: overriding things which takes platform type, assigning to variable
-//todo nullable this in extension functions
+//assigning to variable

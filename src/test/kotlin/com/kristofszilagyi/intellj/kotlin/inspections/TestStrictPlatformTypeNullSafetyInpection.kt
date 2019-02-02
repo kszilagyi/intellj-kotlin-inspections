@@ -31,4 +31,7 @@ class TestStrictPlatformTypeNullSafetyInpection : KotlinLightCodeInsightFixtureT
         myFixture.testHighlighting( "tests/Lambdas.kt")
     }
 
+    fun testMixed() {
+        myFixture.testHighlighting( "tests/Mixed.kt")
+    }
 }
