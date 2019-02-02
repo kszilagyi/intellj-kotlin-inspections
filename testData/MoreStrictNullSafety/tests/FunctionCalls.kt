@@ -44,7 +44,7 @@ fun functionCallReverseNonNull() {
 }
 
 fun functionCallReversePlatform() {
-    Integer.parseInt(<error descr="Passing nullable to Java code">Value().name()</error>)
+    Integer.parseInt(<error descr="Passing platform type to Java code">Value().name()</error>)
 }
 
 public inline fun <T, R> T.let(block: (T) -> R): R {
@@ -67,6 +67,12 @@ fun functionCallReverseLetNullable() {
 fun functionCallReverseLamda() {
     val value: Value? = null
     JavaClass.operate<error descr="Passing nullable to Java code">{_, _ -> value }</error>
+}
+
+
+fun functionCallReverseLambdaPlatform() {
+    val value = JavaClass.value()
+    JavaClass.operate<error descr="Passing platform type to Java code">{_, _ -> value }</error>
 }
 
 fun functionCallReverseLamdaSafe() {

@@ -67,23 +67,24 @@ class StricterNullSafetyInspection : AbstractKotlinInspection() {
                 call?.valueArguments?.forEach{(parameterDescriptor, argumentDescriptor) ->
                     val parameterType = parameterDescriptor.type
                     val argumentExpression = argumentDescriptor.arguments.firstOrNull()?.getArgumentExpression()
-                    if (argumentExpression != null) {
+                    val argumentExpressionType = argumentExpression?.safeResolveType()
+
+                    if (argumentExpressionType != null) {
                         if (parameterType.toClassDescriptor.classId?.asString()?.matches("""kotlin/Function\d+""".toRegex()) == true) {
                             val parameterLambdaReturnType = parameterType.arguments.lastOrNull()?.type
-                            val argumentLambdaReturnType = argumentExpression.safeResolveType()?.arguments?.lastOrNull()?.type
+                            val argumentLambdaReturnType = argumentExpressionType.arguments.lastOrNull()?.type
                             if (parameterLambdaReturnType != null && argumentLambdaReturnType != null &&
                                 !parameterLambdaReturnType.unwrap().isNullable() && argumentLambdaReturnType.isFlexible()
                             ) {
                                 registerProblemFromJava(holder, argumentExpression)
                             } else if (parameterLambdaReturnType?.isFlexible() == true && argumentLambdaReturnType?.isNullable() == true) {
-                                registerProblemToJava(holder, argumentExpression)
+                                registerProblemToJava(holder, argumentExpression, argumentLambdaReturnType.isFlexible())
                             }
                         } else {
-                            if (!parameterType.isFlexible() && !parameterType.isNullable() &&
-                                    argumentExpression.safeResolveType()?.isFlexible() == true) {
+                            if (!parameterType.isFlexible() && !parameterType.isNullable() && argumentExpressionType.isFlexible()) {
                                 registerProblemFromJava(holder, argumentExpression)
-                            } else if (parameterType.isFlexible() && argumentExpression.safeResolveType()?.isNullable() == true) {
-                                registerProblemToJava(holder, argumentExpression)
+                            } else if (parameterType.isFlexible() && argumentExpressionType.isNullable()) {
+                                registerProblemToJava(holder, argumentExpression, argumentExpressionType.isFlexible())
                             }
                         }
                     }
@@ -208,9 +209,13 @@ class StricterNullSafetyInspection : AbstractKotlinInspection() {
                 ProblemHighlightType.GENERIC_ERROR_OR_WARNING)
         }
 
-        private fun registerProblemToJava(holder: ProblemsHolder, expression: KtExpression) {
+
+        private fun registerProblemToJava(holder: ProblemsHolder, expression: KtExpression, platform: Boolean) {
+            val typeString = if(platform) "platform type"
+                             else "nullable"
+
             holder.registerProblem(expression,
-                "Passing nullable to Java code",
+                "Passing $typeString to Java code",
                 ProblemHighlightType.GENERIC_ERROR_OR_WARNING)
         }
 
