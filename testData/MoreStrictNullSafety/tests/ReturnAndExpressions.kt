@@ -114,7 +114,7 @@ class ReturnAndExpressions {
         }
 
     fun dotExpression() {
-        JavaClass.value().<error descr="Unsafe call on platform type">name()</error>
+        JavaClass.value().<error descr="Unsafe call on platform type">name</error>()
     }
 
     fun dotExpressionNormal(){

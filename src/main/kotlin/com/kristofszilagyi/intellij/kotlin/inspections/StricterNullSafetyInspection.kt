@@ -2,8 +2,9 @@ package com.kristofszilagyi.intellij.kotlin.inspections
 
 import com.intellij.codeInspection.ProblemHighlightType
 import com.intellij.codeInspection.ProblemsHolder
+import com.intellij.lang.java.JavaLanguage
 import com.intellij.openapi.diagnostic.Logger
-import com.intellij.psi.PsiElementVisitor
+import com.intellij.psi.*
 import com.intellij.psi.util.parentOfType
 import org.jetbrains.kotlin.idea.caches.resolve.analyze
 import org.jetbrains.kotlin.idea.inspections.AbstractKotlinInspection
@@ -115,7 +116,7 @@ class StricterNullSafetyInspection : AbstractKotlinInspection() {
 
                 val type = expression.safeResolveType()
                 if (type != null && !type.isFlexible() && !type.isNullable()) {
-                    val whens = expression.entries
+                    val whens: List<KtWhenEntry> = expression.entries
                     whens.forEach {
                         val entryExpression = it.expression
                         if (entryExpression != null && entryExpression.safeResolveType()?.isFlexible() == true) {
@@ -195,7 +196,9 @@ class StricterNullSafetyInspection : AbstractKotlinInspection() {
                 val receiverType = expression.receiverExpression.getType(ctx)
                 val selectorExpression = expression.selectorExpression
                 if(receiverType?.isFlexible() == true && selectorExpression != null) {
-                    registerProblemWithMessage(holder, selectorExpression, "Unsafe call on platform type")
+                    if (selectorExpression is KtCallExpression && selectorExpression.firstChild != null) {
+                        registerProblemWithMessage(holder, selectorExpression.firstChild, "Unsafe call on platform type")
+                    }
                 }
             }
         }
@@ -204,19 +207,19 @@ class StricterNullSafetyInspection : AbstractKotlinInspection() {
     companion object {
         private val logger = Logger.getInstance(this::class.java)
 
-        private fun registerProblemFromJava(holder: ProblemsHolder, expression: KtExpression) {
+        private fun registerProblemFromJava(holder: ProblemsHolder, expression: PsiElement) {
             registerProblemWithMessage(holder, expression,
                 "Implicit conversion of platform type to non-nullable")
         }
 
-        private fun registerProblemWithMessage(holder: ProblemsHolder, expression: KtExpression, message: String) {
+        private fun registerProblemWithMessage(holder: ProblemsHolder, expression: PsiElement, message: String) {
             holder.registerProblem(expression,
                 message,
                 ProblemHighlightType.GENERIC_ERROR_OR_WARNING)
         }
 
 
-        private fun registerProblemToJava(holder: ProblemsHolder, expression: KtExpression, platform: Boolean) {
+        private fun registerProblemToJava(holder: ProblemsHolder, expression: PsiElement, platform: Boolean) {
             val typeString = if(platform) "platform type"
                              else "nullable"
 
