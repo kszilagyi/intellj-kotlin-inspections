@@ -1,3 +1,5 @@
+//todo add list tests
+
 fun lambda(): Unit {
     fun takingLambda(f: () -> Value): Value {
         return f()

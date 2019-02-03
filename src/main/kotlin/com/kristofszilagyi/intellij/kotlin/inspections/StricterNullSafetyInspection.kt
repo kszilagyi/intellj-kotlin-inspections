@@ -2,7 +2,6 @@ package com.kristofszilagyi.intellij.kotlin.inspections
 
 import com.intellij.codeInspection.ProblemHighlightType
 import com.intellij.codeInspection.ProblemsHolder
-import com.intellij.lang.java.JavaLanguage
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.psi.*
 import com.intellij.psi.util.parentOfType
@@ -18,7 +17,6 @@ import org.jetbrains.kotlin.resolve.calls.callUtil.getType
 import org.jetbrains.kotlin.resolve.descriptorUtil.classId
 import org.jetbrains.kotlin.resolve.lazy.BodyResolveMode
 import org.jetbrains.kotlin.types.KotlinType
-import org.jetbrains.kotlin.types.isFlexible
 import org.jetbrains.kotlin.types.isNullabilityFlexible
 import org.jetbrains.kotlin.types.isNullable
 import org.jetbrains.kotlinx.serialization.compiler.resolve.toClassDescriptor
@@ -41,7 +39,7 @@ class StricterNullSafetyInspection : AbstractKotlinInspection() {
                 val functionReturnType = context.get(BindingContext.TYPE, callable.typeReference)
                 val bodyReturnType = body.safeResolveType()
                 if (functionReturnType != null && bodyReturnType != null) {
-                    if(bodyReturnType.unwrap().isNullabilityFlexible() && !functionReturnType.isFlexible() && !functionReturnType.isNullable()) {
+                    if(bodyReturnType.unwrap().isNullabilityFlexible() && !functionReturnType.isNullabilityFlexible() && !functionReturnType.isNullable()) {
                         registerProblemFromJava(holder, body)
                     }
                 }
@@ -76,17 +74,17 @@ class StricterNullSafetyInspection : AbstractKotlinInspection() {
                             val parameterLambdaReturnType = parameterType.arguments.lastOrNull()?.type
                             val argumentLambdaReturnType = argumentExpressionType.arguments.lastOrNull()?.type
                             if (parameterLambdaReturnType != null && argumentLambdaReturnType != null &&
-                                !parameterLambdaReturnType.unwrap().isNullable() && argumentLambdaReturnType.isFlexible()
+                                !parameterLambdaReturnType.unwrap().isNullable() && argumentLambdaReturnType.isNullabilityFlexible()
                             ) {
                                 registerProblemFromJava(holder, argumentExpression)
                             } else if (parameterLambdaReturnType?.isNullabilityFlexible() == true && argumentLambdaReturnType?.isNullable() == true) {
-                                registerProblemToJava(holder, argumentExpression, argumentLambdaReturnType.isFlexible())
+                                registerProblemToJava(holder, argumentExpression, argumentLambdaReturnType.isNullabilityFlexible())
                             }
                         } else {
                             if (!parameterType.isNullabilityFlexible() && !parameterType.isNullable() && argumentExpressionType.isNullabilityFlexible()) {
                                 registerProblemFromJava(holder, argumentExpression)
                             } else if (parameterType.isNullabilityFlexible() && argumentExpressionType.isNullable()) {
-                                registerProblemToJava(holder, argumentExpression, argumentExpressionType.isFlexible())
+                                registerProblemToJava(holder, argumentExpression, argumentExpressionType.isNullabilityFlexible())
                             }
                         }
                     }
@@ -98,14 +96,14 @@ class StricterNullSafetyInspection : AbstractKotlinInspection() {
                 expression.analyze(BodyResolveMode.FULL) // without this the type of then and else is intermittently Unit (in the test)
                 val type = expression.safeResolveType()
 
-                if (type != null && !type.isFlexible() && !type.isNullable()) {
+                if (type != null && !type.isNullabilityFlexible() && !type.isNullable()) {
                     val thenBlock = expression.then
                     val elseBlock = expression.`else`
-                    if (thenBlock != null && thenBlock.safeResolveType()?.isFlexible() == true) {
+                    if (thenBlock != null && thenBlock.safeResolveType()?.isNullabilityFlexible() == true) {
                         registerProblemFromJava(holder, thenBlock)
                     }
 
-                    if (elseBlock != null && elseBlock.safeResolveType()?.isFlexible() == true) {
+                    if (elseBlock != null && elseBlock.safeResolveType()?.isNullabilityFlexible() == true) {
                         registerProblemFromJava(holder, elseBlock)
                     }
                 }
@@ -115,11 +113,11 @@ class StricterNullSafetyInspection : AbstractKotlinInspection() {
             override fun visitWhenExpression(expression: KtWhenExpression) {
                 super.visitWhenExpression(expression)
                 val type = expression.safeResolveType()
-                if (type != null && !type.isFlexible() && !type.isNullable()) {
+                if (type != null && !type.isNullabilityFlexible() && !type.isNullable()) {
                     val whens: List<KtWhenEntry> = expression.entries
                     whens.forEach {
                         val entryExpression = it.expression
-                        if (entryExpression != null && entryExpression.safeResolveType()?.isFlexible() == true) {
+                        if (entryExpression != null && entryExpression.safeResolveType()?.isNullabilityFlexible() == true) {
                             registerProblemFromJava(holder, entryExpression)
                         }
                     }
@@ -142,13 +140,13 @@ class StricterNullSafetyInspection : AbstractKotlinInspection() {
                 super.visitBinaryExpression(expression)
 
                 val type = expression.safeResolveType()
-                if (type != null && !type.isFlexible() && !type.isNullable() && !isStringConcat(expression)) {
+                if (type != null && !type.isNullabilityFlexible() && !type.isNullable() && !isStringConcat(expression)) {
                     val leftBlock = expression.left
                     val rightBlock = expression.right
                     val calledFunction = (expression.operationReference.reference?.resolve() as? KtCallableDeclaration)
 
                     val operatorContext = calledFunction?.analyze(BodyResolveMode.FULL)
-                    if (leftBlock != null && leftBlock.safeResolveType()?.isFlexible() == true
+                    if (leftBlock != null && leftBlock.safeResolveType()?.isNullabilityFlexible() == true
                             && expression.operationReference.operationSignTokenType != ELVIS) {
                         val receiverType = operatorContext?.get(BindingContext.TYPE, calledFunction.receiverTypeReference)
                         if (receiverType == null || !receiverType.isNullable()) {
@@ -156,7 +154,7 @@ class StricterNullSafetyInspection : AbstractKotlinInspection() {
                         }
                     }
 
-                    if (rightBlock != null && rightBlock.safeResolveType()?.isFlexible() == true) {
+                    if (rightBlock != null && rightBlock.safeResolveType()?.isNullabilityFlexible() == true) {
                         val parameterType = operatorContext?.get(BindingContext.TYPE,
                             calledFunction.valueParameterList?.parameters?.firstOrNull()?.typeReference)
                         if (parameterType == null || !parameterType.isNullable()) {
@@ -184,7 +182,7 @@ class StricterNullSafetyInspection : AbstractKotlinInspection() {
                 val typeInReturn = expression.returnedExpression?.safeResolveType()
 
                 if (typeInReturn != null && functionReturnType != null) {
-                    if (typeInReturn.unwrap().isFlexible() && !functionReturnType.isFlexible() && !functionReturnType.isNullable()) {
+                    if (typeInReturn.unwrap().isNullabilityFlexible() && !functionReturnType.isNullabilityFlexible() && !functionReturnType.isNullable()) {
                         registerProblemFromJava(holder, expression)
                     }
                 }
@@ -195,7 +193,7 @@ class StricterNullSafetyInspection : AbstractKotlinInspection() {
                 val ctx = expression.analyze(BodyResolveMode.PARTIAL)
                 val receiverType = expression.receiverExpression.getType(ctx)
                 val selectorExpression = expression.selectorExpression
-                if(receiverType?.isFlexible() == true && selectorExpression != null) {
+                if(receiverType?.isNullabilityFlexible() == true && selectorExpression != null) {
                     if (selectorExpression is KtCallExpression && selectorExpression.firstChild != null) {
                         registerProblemWithMessage(holder, selectorExpression.firstChild, "Unsafe call on platform type")
                     }
