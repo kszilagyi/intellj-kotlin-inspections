@@ -83,9 +83,9 @@ class StricterNullSafetyInspection : AbstractKotlinInspection() {
                                 registerProblemToJava(holder, argumentExpression, argumentLambdaReturnType.isFlexible())
                             }
                         } else {
-                            if (!parameterType.isFlexible() && !parameterType.isNullable() && argumentExpressionType.isNullabilityFlexible()) {
+                            if (!parameterType.isNullabilityFlexible() && !parameterType.isNullable() && argumentExpressionType.isNullabilityFlexible()) {
                                 registerProblemFromJava(holder, argumentExpression)
-                            } else if (parameterType.isFlexible() && argumentExpressionType.isNullable()) {
+                            } else if (parameterType.isNullabilityFlexible() && argumentExpressionType.isNullable()) {
                                 registerProblemToJava(holder, argumentExpression, argumentExpressionType.isFlexible())
                             }
                         }

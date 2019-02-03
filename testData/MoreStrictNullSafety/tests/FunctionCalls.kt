@@ -96,6 +96,44 @@ fun functionCallReversePlatform() {
     Integer.parseInt(<error descr="Passing platform type to Java code">Value().name()</error>)
 }
 
+fun functionCallReverseListNotNot() {
+    val list: List<Int> = JavaClass.nonNullList()
+    JavaClass.takesNonNullList(list)
+}
+
+fun functionCallReverseListNotPlatform() {
+    JavaClass.takesNonNullList(<error descr="Implicit conversion of platform type to non-nullable">JavaClass.platformList()</error>)
+}
+
+
+fun functionCallReverseListPlatformNot() {
+    val list: List<Int> = JavaClass.nonNullList()
+    JavaClass.takesPlatformList(list)
+}
+
+fun functionCallReverseListPlatformPlatform() {
+    JavaClass.takesPlatformList(<error descr="Passing platform type to Java code">JavaClass.platformList()</error>)
+}
+
+fun functionCallReverseListPlatformNull() {
+    val list: List<Int>? = JavaClass.nonNullList()
+    JavaClass.takesPlatformList(<error descr="Passing nullable to Java code">list</error>)
+}
+
+fun functionCallReverseListNullNot() {
+    val list: List<Int> = JavaClass.nonNullList()
+    JavaClass.takesNullList(list)
+}
+
+fun functionCallReverseListNullPlatform() {
+    JavaClass.takesNullList(JavaClass.platformList())
+}
+
+fun functionCallReverseListNullNull() {
+    val list: List<Int>? = JavaClass.nonNullList()
+    JavaClass.takesNullList(list)
+}
+
 public inline fun <T, R> T.let(block: (T) -> R): R {
     return block(this)
 }
