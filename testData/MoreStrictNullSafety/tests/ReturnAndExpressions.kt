@@ -91,6 +91,38 @@ class ReturnAndExpressions {
     fun binaryBoth(): Value = <error descr="Implicit conversion of platform type to non-nullable">JavaClass.value()</error> + <error descr="Implicit conversion of platform type to non-nullable">JavaClass.value()</error>
     fun binaryBothNullable(): Value? = <error descr="Implicit conversion of platform type to non-nullable">JavaClass.value()</error> + <error descr="Implicit conversion of platform type to non-nullable">JavaClass.value()</error>
 
+    fun binaryNullCheck() {
+        if(JavaClass.value() == null) {}
+    }
+
+    fun binaryNonNullCheck() {
+        if(JavaClass.value() != null) {}
+    }
+
+    fun binaryNullCheckReverse() {
+        if(null == JavaClass.value()) {}
+    }
+
+    fun binaryNonNullCheckReverse() {
+        if(null != JavaClass.value()) {}
+    }
+
+    fun binaryNullCheckReference() {
+        if(JavaClass.value() === null) {}
+    }
+
+    fun binaryNonNullCheckReference() {
+        if(JavaClass.value() !== null) {}
+    }
+
+    fun binaryNullCheckReverseReference() {
+        if(null === JavaClass.value()) {}
+    }
+
+    fun binaryNonNullCheckReverseReference() {
+        if(null !== JavaClass.value()) {}
+    }
+
 
     val property: Value = <error descr="Implicit conversion of platform type to non-nullable">JavaClass.value()</error>
     val propertyNullable: Value? = JavaClass.value()

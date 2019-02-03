@@ -8,8 +8,8 @@ import com.intellij.psi.util.parentOfType
 import org.jetbrains.kotlin.idea.caches.resolve.analyze
 import org.jetbrains.kotlin.idea.inspections.AbstractKotlinInspection
 import org.jetbrains.kotlin.idea.refactoring.renderTrimmed
-import org.jetbrains.kotlin.lexer.KtTokens.ELVIS
-import org.jetbrains.kotlin.lexer.KtTokens.PLUS
+import org.jetbrains.kotlin.lexer.KtSingleValueToken
+import org.jetbrains.kotlin.lexer.KtTokens.*
 import org.jetbrains.kotlin.psi.*
 import org.jetbrains.kotlin.resolve.BindingContext
 import org.jetbrains.kotlin.resolve.calls.callUtil.getResolvedCall
@@ -138,6 +138,10 @@ class StricterNullSafetyInspection : AbstractKotlinInspection() {
                 return false
             }
 
+            private fun isEquality(operator: KtSingleValueToken?): Boolean {
+                return operator == EQEQ || operator == EQEQEQ || operator == EXCLEQ || operator == EXCLEQEQEQ
+            }
+
             override fun visitBinaryExpression(expression: KtBinaryExpression) {
                 super.visitBinaryExpression(expression)
 
@@ -148,15 +152,16 @@ class StricterNullSafetyInspection : AbstractKotlinInspection() {
                     val calledFunction = (expression.operationReference.reference?.resolve() as? KtCallableDeclaration)
 
                     val operatorContext = calledFunction?.analyze(BodyResolveMode.FULL)
+                    val operator = expression.operationReference.operationSignTokenType
                     if (leftBlock != null && leftBlock.safeResolveType()?.isNullabilityFlexible() == true
-                            && expression.operationReference.operationSignTokenType != ELVIS) {
+                            && operator != ELVIS && !isEquality(operator)) {
                         val receiverType = operatorContext?.get(BindingContext.TYPE, calledFunction.receiverTypeReference)
                         if (receiverType == null || !receiverType.isNullable()) {
                             registerProblemFromJava(holder, leftBlock)
                         }
                     }
 
-                    if (rightBlock != null && rightBlock.safeResolveType()?.isNullabilityFlexible() == true) {
+                    if (rightBlock != null && rightBlock.safeResolveType()?.isNullabilityFlexible() == true && !isEquality(operator)) {
                         val parameterType = operatorContext?.get(BindingContext.TYPE,
                             calledFunction.valueParameterList?.parameters?.firstOrNull()?.typeReference)
                         if (parameterType == null || !parameterType.isNullable()) {
@@ -197,8 +202,10 @@ class StricterNullSafetyInspection : AbstractKotlinInspection() {
                 val receiverType = expression.receiverExpression.getType(ctx)
                 val selectorExpression = expression.selectorExpression
                 if(receiverType?.isNullabilityFlexible() == true && selectorExpression != null) {
-                    if (selectorExpression is KtCallExpression && selectorExpression.firstChild != null) {
-                        registerProblemWithMessage(holder, selectorExpression.firstChild, "Unsafe call on platform type")
+                    val firstChild = selectorExpression.firstChild
+                    if (firstChild != null) { //todo submit bug?
+                        //val x= firstChild
+                        registerProblemWithMessage(holder, firstChild, "Unsafe call on platform type")
                     }
                 }
             }
