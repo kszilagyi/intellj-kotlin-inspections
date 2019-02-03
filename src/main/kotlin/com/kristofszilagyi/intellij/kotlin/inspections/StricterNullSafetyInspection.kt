@@ -19,6 +19,7 @@ import org.jetbrains.kotlin.resolve.descriptorUtil.classId
 import org.jetbrains.kotlin.resolve.lazy.BodyResolveMode
 import org.jetbrains.kotlin.types.KotlinType
 import org.jetbrains.kotlin.types.isFlexible
+import org.jetbrains.kotlin.types.isNullabilityFlexible
 import org.jetbrains.kotlin.types.isNullable
 import org.jetbrains.kotlinx.serialization.compiler.resolve.toClassDescriptor
 
@@ -82,7 +83,7 @@ class StricterNullSafetyInspection : AbstractKotlinInspection() {
                                 registerProblemToJava(holder, argumentExpression, argumentLambdaReturnType.isFlexible())
                             }
                         } else {
-                            if (!parameterType.isFlexible() && !parameterType.isNullable() && argumentExpressionType.isFlexible()) {
+                            if (!parameterType.isFlexible() && !parameterType.isNullable() && argumentExpressionType.isNullabilityFlexible()) {
                                 registerProblemFromJava(holder, argumentExpression)
                             } else if (parameterType.isFlexible() && argumentExpressionType.isNullable()) {
                                 registerProblemToJava(holder, argumentExpression, argumentExpressionType.isFlexible())

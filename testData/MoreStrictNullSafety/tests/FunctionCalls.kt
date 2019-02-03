@@ -18,6 +18,25 @@ fun functionCallNormalNullable(): Unit {
     functionNullable(Value())
 }
 
+fun functionTakingList(l: List<Int>) = l
+fun functionTakingListNullable(l: List<Int>?) = l
+
+fun functionCallListNonNon(): Unit {
+    functionTakingList(JavaClass.nonNullList())
+}
+
+fun functionCallListNonPlatform(): Unit {
+    functionTakingList(<error descr="Implicit conversion of platform type to non-nullable">JavaClass.platformList()</error>)
+}
+
+fun functionCallListNullPlatform(): Unit {
+    functionTakingListNullable(JavaClass.platformList())
+}
+
+fun functionCallListNullNull(): Unit {
+    functionTakingListNullable(JavaClass.nullableList())
+}
+
 fun lambdaCall(): Unit {
     val lambda = {v: Value -> v}
     lambda(<error descr="Implicit conversion of platform type to non-nullable">JavaClass.value()</error>)

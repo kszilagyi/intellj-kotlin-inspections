@@ -15,7 +15,7 @@ class TestStrictPlatformTypeNullSafetyInpection : KotlinLightCodeInsightFixtureT
     override fun setUp() {
         super.setUp()
         myFixture.enableInspections(StricterNullSafetyInspection())
-        myFixture.configureByFiles("ValueExtension.kt", "JavaClass.java",
+        myFixture.configureByFiles("NotNull.java", "Nullable.java", "ValueExtension.kt", "JavaClass.java",
             "Value.java", "Generic.kt")
     }
 
