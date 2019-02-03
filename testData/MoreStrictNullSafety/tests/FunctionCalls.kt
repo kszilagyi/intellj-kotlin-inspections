@@ -33,6 +33,10 @@ fun functionCallListNullPlatform(): Unit {
     functionTakingListNullable(JavaClass.platformList())
 }
 
+fun functionCallListNullNon(): Unit {
+    functionTakingListNullable(JavaClass.nonNullList())
+}
+
 fun functionCallListNullNull(): Unit {
     functionTakingListNullable(JavaClass.nullableList())
 }
@@ -51,6 +55,32 @@ fun lambdaCallNullable(): Unit {
     val lambda = {v: Value? -> v}
     lambda(JavaClass.value())
 }
+
+fun lambdaCallTakingListNotNot(): Unit {
+    val lambda = {v: List<Int> -> v}
+    lambda(JavaClass.nonNullList())
+}
+
+fun lambdaCallTakingListNotPlatform(): Unit {
+    val lambda = {v: List<Int> -> v}
+    lambda(<error descr="Implicit conversion of platform type to non-nullable">JavaClass.platformList()</error>)
+}
+
+fun lambdaCallTakingListNullNot(): Unit {
+    val lambda = {v: List<Int>? -> v}
+    lambda(JavaClass.nonNullList())
+}
+
+fun lambdaCallTakingListNullPlatform(): Unit {
+    val lambda = {v: List<Int>? -> v}
+    lambda(JavaClass.platformList())
+}
+
+fun lambdaCallTakingListNullNull(): Unit {
+    val lambda = {v: List<Int>? -> v}
+    lambda(JavaClass.nullableList())
+}
+
 
 fun functionCallReverse() {
     val number: String? = "1"
