@@ -166,3 +166,33 @@ fun functionCallReverseLamdaSafe() {
     val value = Value()
     JavaClass.operate{_, _ -> value }
 }
+
+fun functionCallReverseLamdaList() {
+    val list: List<Int> = JavaClass.nonNullList()
+    JavaClass.operateNonNullList{_, _ -> list }
+}
+
+fun functionCallReverseLamdaListToNull() {
+    val list: List<Int> = JavaClass.nonNullList()
+    JavaClass.operateNullList{_, _ -> list }
+}
+
+fun functionCallReverseLamdaListToPlatform() {
+    val list: List<Int> = JavaClass.nonNullList()
+    JavaClass.operatePlatformList{_, _ -> list }
+}
+
+fun functionCallReverseLamdaListNullToPlatform() {
+    val list: List<Int>? = JavaClass.nonNullList()
+    JavaClass.operatePlatformList<error descr="Passing nullable to Java code">{_, _ -> list }</error>
+}
+
+fun functionCallReverseLamdaNullToNull() {
+    val list: List<Int>? = JavaClass.nonNullList()
+    JavaClass.operateNullList{_, _ -> list }
+}
+
+fun functionCallReverseLamdaPlatformToNull() {
+    val list = JavaClass.platformList()
+    JavaClass.operateNullList{_, _ -> list }
+}
