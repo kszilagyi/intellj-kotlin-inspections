@@ -39,7 +39,8 @@ class StricterNullSafetyInspection : AbstractKotlinInspection() {
                 val functionReturnType = context.get(BindingContext.TYPE, callable.typeReference)
                 val bodyReturnType = body.safeResolveType()
                 if (functionReturnType != null && bodyReturnType != null) {
-                    if(bodyReturnType.unwrap().isNullabilityFlexible() && !functionReturnType.isNullabilityFlexible() && !functionReturnType.isNullable()) {
+                    if(bodyReturnType.unwrap().isNullabilityFlexible() && !functionReturnType.isNullabilityFlexible()
+                            && !functionReturnType.isNullable()) {
                         registerProblemFromJava(holder, body)
                     }
                 }
@@ -81,7 +82,8 @@ class StricterNullSafetyInspection : AbstractKotlinInspection() {
                                 registerProblemToJava(holder, argumentExpression, argumentLambdaReturnType.isNullabilityFlexible())
                             }
                         } else {
-                            if (!parameterType.isNullabilityFlexible() && !parameterType.isNullable() && argumentExpressionType.isNullabilityFlexible()) {
+                            if (!parameterType.isNullabilityFlexible() && !parameterType.isNullable()
+                                    && argumentExpressionType.isNullabilityFlexible()) {
                                 registerProblemFromJava(holder, argumentExpression)
                             } else if (parameterType.isNullabilityFlexible() && argumentExpressionType.isNullable()) {
                                 registerProblemToJava(holder, argumentExpression, argumentExpressionType.isNullabilityFlexible())
@@ -182,7 +184,8 @@ class StricterNullSafetyInspection : AbstractKotlinInspection() {
                 val typeInReturn = expression.returnedExpression?.safeResolveType()
 
                 if (typeInReturn != null && functionReturnType != null) {
-                    if (typeInReturn.unwrap().isNullabilityFlexible() && !functionReturnType.isNullabilityFlexible() && !functionReturnType.isNullable()) {
+                    if (typeInReturn.unwrap().isNullabilityFlexible() && !functionReturnType.isNullabilityFlexible()
+                            && !functionReturnType.isNullable()) {
                         registerProblemFromJava(holder, expression)
                     }
                 }
