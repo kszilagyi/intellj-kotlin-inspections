@@ -21,5 +21,24 @@ fun assinmentInferred() {
     value2.toString()
 }
 
-//todo add assignment tests
+fun assingmentList() {
+    val list: List<Int> = <error descr="Implicit conversion of platform type to non-nullable">JavaClass.platformList()</error>
+    list.toString()
+}
+
+fun assingmentListNullable() {
+    val list: List<Int>? = JavaClass.platformList()
+    list.toString()
+}
+
+fun assingmentListNonNullable() {
+    val list: List<Int> = JavaClass.nonNullList()
+    list.toString()
+}
+
+fun assingmentListNullableFine() {
+    val list: List<Int>? = JavaClass.nullableList()
+    list.toString()
+}
+
 //todo add overrides

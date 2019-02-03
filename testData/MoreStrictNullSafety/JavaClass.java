@@ -22,4 +22,8 @@ public class JavaClass {
 
     @Nullable
     static public List<Integer> nullableList() { return null; }
+
+    static public void takesNonNullList(@NotNull List<Integer> a) {}
+    static public void takesPlatformList(List<Integer> a) {}
+    static public void takesNullList(@Nullable List<Integer> a) {}
 }

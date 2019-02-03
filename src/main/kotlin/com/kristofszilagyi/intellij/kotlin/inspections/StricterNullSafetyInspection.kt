@@ -41,7 +41,7 @@ class StricterNullSafetyInspection : AbstractKotlinInspection() {
                 val functionReturnType = context.get(BindingContext.TYPE, callable.typeReference)
                 val bodyReturnType = body.safeResolveType()
                 if (functionReturnType != null && bodyReturnType != null) {
-                    if(bodyReturnType.unwrap().isFlexible() && !functionReturnType.isFlexible() && !functionReturnType.isNullable()) {
+                    if(bodyReturnType.unwrap().isNullabilityFlexible() && !functionReturnType.isFlexible() && !functionReturnType.isNullable()) {
                         registerProblemFromJava(holder, body)
                     }
                 }
@@ -114,7 +114,6 @@ class StricterNullSafetyInspection : AbstractKotlinInspection() {
 
             override fun visitWhenExpression(expression: KtWhenExpression) {
                 super.visitWhenExpression(expression)
-
                 val type = expression.safeResolveType()
                 if (type != null && !type.isFlexible() && !type.isNullable()) {
                     val whens: List<KtWhenEntry> = expression.entries
