@@ -79,9 +79,8 @@ class ReturnAndExpressions {
 
     fun binaryNullableParameterInOperator(): Value = JavaClass.value() - Value()
     fun binaryNullableReceiverInOperator(): Value = Value() * JavaClass.value()
-    // todo string concat shouldn'be highlighted
 
-    fun stringAddition(): String = "hi " + Value().name() // it's weird that this fails as the plys has the right signature
+    fun stringAddition(): String = "hi " + Value().name()
     fun stringAdditionReverse(): String = Value().name() + " hi"
 
     fun binaryElvis(): Value = JavaClass.value() ?: Value()
